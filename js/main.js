@@ -103,7 +103,12 @@ function showMainScreen() {
     initHeroParticles();
     initScrollReveal();
 
-    // Start auto theme rotation (every 20s) and shape rotation (every 10s)
+    // Initialize couple doll (background dancing characters)
+    if (typeof CoupleDoll !== 'undefined') {
+        setTimeout(function() { CoupleDoll.init(); }, 500);
+    }
+
+    // Start auto theme rotation (every 5s) and shape rotation (every 8s)
     if (typeof startThemeRotation === 'function') startThemeRotation();
 }
 

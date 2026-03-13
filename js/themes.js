@@ -598,56 +598,63 @@ function initTheme() {
 }
 
 function startThemeRotation() {
-    // Auto-rotate themes every 20 seconds
+    // Auto-rotate themes every 5 seconds with smooth blend
     if (themeRotationInterval) clearInterval(themeRotationInterval);
     themeRotationInterval = setInterval(function() {
         rotateToNextTheme();
-    }, 20000);
+    }, 5000);
 
-    // Change floating shapes every 10 seconds
+    // Change floating shapes every 8 seconds
     if (shapeRotationInterval) clearInterval(shapeRotationInterval);
     shapeRotationInterval = setInterval(function() {
         rotateFloatingShapes();
-    }, 10000);
+    }, 8000);
 }
 
 function rotateToNextTheme() {
     currentThemeIndex = (currentThemeIndex + 1) % themesShuffled.length;
     var nextTheme = themesShuffled[currentThemeIndex];
 
-    // 1. Add transition class to <html> for smooth CSS transitions
+    // 1. Add transition class to <html> for smooth CSS transitions (stays on for continuous smoothness)
     document.documentElement.classList.add('theme-transitioning');
 
-    // 2. Flash overlay effect
+    // 2. Gentle overlay pulse (not abrupt flash)
     var overlay = document.getElementById('theme-flash-overlay');
     if (overlay) {
-        overlay.style.background = 'radial-gradient(circle at center, ' + nextTheme.primary + '30, transparent)';
+        overlay.style.background = 'radial-gradient(circle at center, ' + nextTheme.primary + '15, transparent)';
         overlay.classList.add('active');
-        setTimeout(function() { overlay.classList.remove('active'); }, 1500);
+        setTimeout(function() { overlay.classList.remove('active'); }, 2000);
     }
 
-    // 3. Apply the new theme colors
+    // 3. Apply the new theme colors (CSS variables transition smoothly)
     currentTheme = nextTheme;
     applyTheme(currentTheme);
 
     // 4. Re-apply themed SVG images
     if (typeof applyThemedImages === 'function') applyThemedImages();
 
-    // 5. Show theme label toast
+    // 5. Update couple doll colors
+    if (typeof CoupleDoll !== 'undefined' && CoupleDoll.initialized) {
+        CoupleDoll.updateTheme();
+    }
+
+    // 6. Show theme label toast
     var toast = document.getElementById('theme-label-toast');
     if (toast) {
         toast.textContent = '🎨 ' + currentTheme.label;
         toast.classList.add('show');
-        setTimeout(function() { toast.classList.remove('show'); }, 3000);
+        setTimeout(function() { toast.classList.remove('show'); }, 3500);
     }
 
-    // 6. Remove transition class after animation completes
+    // 7. Keep transition class always active for perpetual smooth blending
+    //    (Remove and re-add to reset the transition timers for next cycle)
     setTimeout(function() {
         document.documentElement.classList.remove('theme-transitioning');
-    }, 1500);
-
-    // 7. Refresh floating background shapes for new theme
-    refreshFloatingBackground();
+        // Re-add after a brief gap so next change is also smooth
+        setTimeout(function() {
+            document.documentElement.classList.add('theme-transitioning');
+        }, 50);
+    }, 2500);
 
     console.log('🎨 Theme → ' + currentTheme.label + ' (' + (currentThemeIndex + 1) + '/' + themesShuffled.length + ')');
 }

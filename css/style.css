@@ -45,14 +45,14 @@ html.theme-transitioning *,
 html.theme-transitioning *::before,
 html.theme-transitioning *::after {
     transition: 
-        background-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        background 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        border-color 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        box-shadow 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        text-shadow 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        fill 1.2s cubic-bezier(0.4, 0, 0.2, 1),
-        stroke 1.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        background-color 2.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        background 2.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        color 2s cubic-bezier(0.25, 0.1, 0.25, 1),
+        border-color 2s cubic-bezier(0.25, 0.1, 0.25, 1),
+        box-shadow 2.5s cubic-bezier(0.25, 0.1, 0.25, 1),
+        text-shadow 2s cubic-bezier(0.25, 0.1, 0.25, 1),
+        fill 2s cubic-bezier(0.25, 0.1, 0.25, 1),
+        stroke 2s cubic-bezier(0.25, 0.1, 0.25, 1) !important;
 }
 
 .theme-flash-overlay {
@@ -70,13 +70,13 @@ html.theme-transitioning *::after {
 
 .theme-flash-overlay.active {
     opacity: 1;
-    animation: themeFlash 1.5s ease forwards;
+    animation: themeFlash 2.5s ease forwards;
 }
 
 @keyframes themeFlash {
     0% { opacity: 0; }
-    15% { opacity: 0.2; }
-    40% { opacity: 0.08; }
+    20% { opacity: 0.12; }
+    50% { opacity: 0.05; }
     100% { opacity: 0; }
 }
 
