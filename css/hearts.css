@@ -1,0 +1,46 @@
+/* ========================================
+   CURSOR HEARTS
+   ======================================== */
+.cursor-heart {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99996;
+    font-size: 20px;
+    animation: cursorHeartFly 1.5s ease-out forwards;
+    user-select: none;
+}
+
+@keyframes cursorHeartFly {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(1) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) scale(0) rotate(var(--rot));
+    }
+}
+
+/* Click burst hearts */
+.click-heart {
+    position: fixed;
+    pointer-events: none;
+    z-index: 99996;
+    font-size: 24px;
+    animation: clickBurst 0.8s ease-out forwards;
+}
+
+@keyframes clickBurst {
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) scale(0.5);
+    }
+    50% {
+        opacity: 1;
+        transform: translate(var(--tx), var(--ty)) scale(1.2);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(calc(var(--tx) * 1.5), calc(var(--ty) * 1.5)) scale(0);
+    }
+}
