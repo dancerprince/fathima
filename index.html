@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="css/quotes.css">
     <link rel="stylesheet" href="css/games.css">
     <link rel="stylesheet" href="css/gallery.css">
+    <link rel="stylesheet" href="css/giftbox.css">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
 </head>
 <body>
@@ -79,6 +80,28 @@
                 <div class="hero-buttons">
                     <button class="btn btn-primary" onclick="smoothScroll('#quotes')">💌 Read Love Notes</button>
                     <button class="btn btn-secondary" onclick="smoothScroll('#games')">🎮 Play Games</button>
+                </div>
+
+                <!-- Gift Box -->
+                <div class="gift-box-wrapper">
+                    <p class="gift-box-label">🎀 Tap the gift for a love surprise! 🎀</p>
+                    <div class="gift-box" id="gift-box" onclick="openGiftBox()">
+                        <div class="gift-lid" id="gift-lid">
+                            <div class="gift-bow"></div>
+                        </div>
+                        <div class="gift-body">
+                            <div class="gift-ribbon-v"></div>
+                            <div class="gift-ribbon-h"></div>
+                        </div>
+                    </div>
+                    <div class="gift-quote-popup hidden" id="gift-quote-popup">
+                        <div class="gift-quote-card">
+                            <span class="gift-quote-close" onclick="closeGiftQuote(event)">✕</span>
+                            <div class="gift-quote-emoji">💖</div>
+                            <p class="gift-quote-text" id="gift-quote-text"></p>
+                            <button class="btn btn-pastel gift-another-btn" onclick="openGiftBox()">🎁 Open Another Gift</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="hero-scroll-indicator">
                     <span>Scroll Down</span>
@@ -361,6 +384,7 @@
     <script src="js/hearts.js"></script>
     <script src="js/games.js"></script>
     <script src="js/confetti.js"></script>
+    <script src="js/giftbox.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>
