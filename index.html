@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💖 Happy Birthday Fathima 💖</title>
+    <title>Happy Birthday Fathima</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
@@ -14,14 +14,14 @@
     <link rel="stylesheet" href="css/games.css">
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/giftbox.css">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💖</text></svg>">
+    <!-- favicon set dynamically by theme -->
 </head>
 <body>
     <!-- ==================== LOADING SCREEN ==================== -->
     <div id="loading-screen" class="loading-screen">
         <div class="loading-content">
             <div class="loading-heart-container">
-                <div class="loading-heart">💖</div>
+                <div class="loading-heart"></div>
             </div>
             <p class="loading-quote" id="loading-quote"></p>
             <div class="loading-bar-container">
@@ -40,7 +40,7 @@
                 <span class="countdown-num">5</span>
             </div>
             <div class="countdown-hearts">
-                <span>💕</span><span>💖</span><span>💗</span><span>💕</span><span>💖</span>
+                <span></span><span></span><span></span><span></span><span></span>
             </div>
         </div>
     </div>
@@ -55,7 +55,7 @@
 
         <!-- Navigation -->
         <nav class="main-nav" id="main-nav">
-            <div class="nav-brand">💖 For Fathima 💖</div>
+            <div class="nav-brand">For Fathima</div>
             <div class="nav-links">
                 <a href="#hero" class="nav-link active">Home</a>
                 <a href="#quotes" class="nav-link">Love Notes</a>
@@ -63,28 +63,28 @@
                 <a href="#games" class="nav-link">Fun Games</a>
                 <a href="#letter" class="nav-link">My Letter</a>
             </div>
-            <button class="nav-toggle" id="nav-toggle">☰</button>
+            <button class="nav-toggle" id="nav-toggle"><svg viewBox="0 0 24 24" width="24" height="24"><rect x="3" y="5" width="18" height="2" rx="1" fill="currentColor"/><rect x="3" y="11" width="18" height="2" rx="1" fill="currentColor"/><rect x="3" y="17" width="18" height="2" rx="1" fill="currentColor"/></svg></button>
         </nav>
 
         <!-- ===== HERO SECTION ===== -->
         <section id="hero" class="hero-section">
             <div class="hero-particles" id="hero-particles"></div>
             <div class="hero-content">
-                <div class="hero-badge">✨ Today is Special ✨</div>
+                <div class="hero-badge">Today is Special</div>
                 <h1 class="hero-title">
                     <span class="hero-line1">Happy Birthday</span>
                     <span class="hero-name">Fathima</span>
-                    <span class="hero-emoji">🎂</span>
+                    <span class="hero-emoji"></span>
                 </h1>
                 <p class="hero-subtitle">Every moment with you is a gift. Today, the world celebrates the day it received its most beautiful soul.</p>
                 <div class="hero-buttons">
-                    <button class="btn btn-primary" onclick="smoothScroll('#quotes')">💌 Read Love Notes</button>
-                    <button class="btn btn-secondary" onclick="smoothScroll('#games')">🎮 Play Games</button>
+                    <button class="btn btn-primary" onclick="smoothScroll('#quotes')">Read Love Notes</button>
+                    <button class="btn btn-secondary" onclick="smoothScroll('#games')">Play Games</button>
                 </div>
 
                 <!-- Gift Box -->
                 <div class="gift-box-wrapper">
-                    <p class="gift-box-label">🎀 Tap the gift for a love surprise! 🎀</p>
+                    <p class="gift-box-label">Tap the gift for a love surprise!</p>
                     <div class="gift-box" id="gift-box" onclick="openGiftBox()">
                         <div class="gift-lid" id="gift-lid">
                             <div class="gift-bow"></div>
@@ -96,16 +96,16 @@
                     </div>
                     <div class="gift-quote-popup hidden" id="gift-quote-popup">
                         <div class="gift-quote-card">
-                            <span class="gift-quote-close" onclick="closeGiftQuote(event)">✕</span>
-                            <div class="gift-quote-emoji">💖</div>
+                            <span class="gift-quote-close" onclick="closeGiftQuote(event)"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></span>
+                            <div class="gift-quote-emoji"></div>
                             <p class="gift-quote-text" id="gift-quote-text"></p>
-                            <button class="btn btn-pastel gift-another-btn" onclick="openGiftBox()">🎁 Open Another Gift</button>
+                            <button class="btn btn-pastel gift-another-btn" onclick="openGiftBox()">Open Another Gift</button>
                         </div>
                     </div>
                 </div>
                 <div class="hero-scroll-indicator">
                     <span>Scroll Down</span>
-                    <div class="scroll-arrow">↓</div>
+                    <div class="scroll-arrow"><svg viewBox="0 0 24 24" width="20" height="20"><polyline points="6,9 12,15 18,9" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 </div>
             </div>
             <div class="hero-cake">
@@ -127,23 +127,23 @@
         <!-- ===== QUOTES SECTION ===== -->
         <section id="quotes" class="quotes-section">
             <div class="section-header">
-                <span class="section-badge">💌</span>
+                <span class="section-badge"></span>
                 <h2 class="section-title">100 Reasons I Love You</h2>
                 <p class="section-subtitle">Every word is a piece of my heart, written just for you</p>
             </div>
             <div class="quotes-controls">
-                <button class="btn btn-pastel" id="quote-shuffle">🔀 Shuffle</button>
-                <button class="btn btn-pastel" id="quote-fav">💖 Favorites</button>
+                <button class="btn btn-pastel" id="quote-shuffle">Shuffle</button>
+                <button class="btn btn-pastel" id="quote-fav">Favorites</button>
                 <span class="quote-counter" id="quote-counter">1 / 100</span>
             </div>
             <div class="quote-carousel" id="quote-carousel">
-                <button class="carousel-btn carousel-prev" id="quote-prev">❮</button>
+                <button class="carousel-btn carousel-prev" id="quote-prev"><svg viewBox="0 0 24 24" width="18" height="18"><polyline points="15,4 7,12 15,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                 <div class="quote-card" id="quote-card">
                     <div class="quote-number" id="quote-number">#1</div>
                     <p class="quote-text" id="quote-text"></p>
-                    <button class="quote-heart-btn" id="quote-heart-btn">🤍</button>
+                    <button class="quote-heart-btn" id="quote-heart-btn"></button>
                 </div>
-                <button class="carousel-btn carousel-next" id="quote-next">❯</button>
+                <button class="carousel-btn carousel-next" id="quote-next"><svg viewBox="0 0 24 24" width="18" height="18"><polyline points="9,4 17,12 9,20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
             </div>
             <div class="quote-dots" id="quote-dots"></div>
         </section>
@@ -151,38 +151,38 @@
         <!-- ===== TIMELINE / OUR STORY SECTION ===== -->
         <section id="timeline" class="timeline-section">
             <div class="section-header">
-                <span class="section-badge">💕</span>
+                <span class="section-badge"></span>
                 <h2 class="section-title">Celebrating You</h2>
                 <p class="section-subtitle">All the reasons why you make every day magical</p>
             </div>
             <div class="celebration-cards">
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">🌸</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Smile</h3>
                     <p>The way your smile lights up the entire room — it's my favorite sunrise, every single day.</p>
                 </div>
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">💫</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Kindness</h3>
                     <p>You carry so much love in your heart. The world is gentler because you exist in it.</p>
                 </div>
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">🌙</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Strength</h3>
                     <p>Even on the hardest days, you stand tall with grace. You inspire me more than you'll ever know.</p>
                 </div>
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">🦋</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Laughter</h3>
                     <p>That beautiful laugh of yours — it's the melody my heart knows by heart.</p>
                 </div>
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">🌹</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Love</h3>
                     <p>Being loved by you is the greatest blessing of my life. I am who I am because of you.</p>
                 </div>
                 <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon">✨</div>
+                    <div class="celeb-icon"></div>
                     <h3>Your Soul</h3>
                     <p>Pure, beautiful, and endlessly warm — your soul is a masterpiece that God crafted with extra love.</p>
                 </div>
@@ -192,7 +192,7 @@
         <!-- ===== MINI GAMES SECTION ===== -->
         <section id="games" class="games-section">
             <div class="section-header">
-                <span class="section-badge">🎮</span>
+                <span class="section-badge"></span>
                 <h2 class="section-title">Fun & Games</h2>
                 <p class="section-subtitle">A little fun made with love, just for you!</p>
             </div>
@@ -200,7 +200,7 @@
                 <!-- Game 1: Memory Match -->
                 <div class="game-card" id="game-memory">
                     <div class="game-card-front">
-                        <div class="game-icon">🧠</div>
+                        <div class="game-icon"></div>
                         <h3>Memory Match</h3>
                         <p>Match the love-themed pairs!</p>
                         <button class="btn btn-game" onclick="startMemoryGame()">Play Now</button>
@@ -209,7 +209,7 @@
                 <!-- Game 2: Love Quiz -->
                 <div class="game-card" id="game-quiz">
                     <div class="game-card-front">
-                        <div class="game-icon">💝</div>
+                        <div class="game-icon"></div>
                         <h3>Love Quiz</h3>
                         <p>How well do we know each other?</p>
                         <button class="btn btn-game" onclick="startLoveQuiz()">Play Now</button>
@@ -218,7 +218,7 @@
                 <!-- Game 3: Catch Hearts -->
                 <div class="game-card" id="game-catch">
                     <div class="game-card-front">
-                        <div class="game-icon">💖</div>
+                        <div class="game-icon"></div>
                         <h3>Catch the Hearts</h3>
                         <p>Catch falling hearts before they disappear!</p>
                         <button class="btn btn-game" onclick="startCatchHearts()">Play Now</button>
@@ -227,7 +227,7 @@
                 <!-- Game 4: Puzzle -->
                 <div class="game-card" id="game-puzzle">
                     <div class="game-card-front">
-                        <div class="game-icon">🧩</div>
+                        <div class="game-icon"></div>
                         <h3>Love Jigsaw</h3>
                         <p>Piece together a love message!</p>
                         <button class="btn btn-game" onclick="startJigsaw()">Play Now</button>
@@ -236,7 +236,7 @@
                 <!-- Game 5: Wish Jar -->
                 <div class="game-card" id="game-jar">
                     <div class="game-card-front">
-                        <div class="game-icon">🫙</div>
+                        <div class="game-icon"></div>
                         <h3>Wish Jar</h3>
                         <p>Pick a surprise wish from the jar!</p>
                         <button class="btn btn-game" onclick="startWishJar()">Play Now</button>
@@ -245,7 +245,7 @@
                 <!-- Game 6: Spin the Wheel -->
                 <div class="game-card" id="game-wheel">
                     <div class="game-card-front">
-                        <div class="game-icon">🎡</div>
+                        <div class="game-icon"></div>
                         <h3>Love Wheel</h3>
                         <p>Spin and get a love surprise!</p>
                         <button class="btn btn-game" onclick="startLoveWheel()">Play Now</button>
@@ -260,7 +260,7 @@
                 <div class="envelope" id="envelope" onclick="openEnvelope()">
                     <div class="envelope-top"></div>
                     <div class="envelope-body">
-                        <p class="envelope-text">💌 Click to Open</p>
+                        <p class="envelope-text">Click to Open</p>
                     </div>
                 </div>
                 <div class="letter-content hidden" id="letter-content">
@@ -273,7 +273,7 @@
                         <p>Happy Birthday, my love. May this year bring you everything your beautiful heart desires. I promise to be there holding your hand through every moment.</p>
                         <div class="letter-signature">
                             <p>With all my love, forever & always,</p>
-                            <p class="signature-name">Prasanth Prince 💖</p>
+                            <p class="signature-name">Prasanth Prince</p>
                         </div>
                     </div>
                 </div>
@@ -282,44 +282,44 @@
 
         <!-- ===== FOOTER ===== -->
         <footer class="main-footer">
-            <div class="footer-hearts">💖💕💗💖💕💗💖</div>
+            <div class="footer-hearts"></div>
             <p class="footer-text">Made with infinite love by <span class="footer-name">Prasanth Prince</span></p>
             <p class="footer-subtext">For the most beautiful woman in the world — <span class="footer-name">Fathima</span></p>
-            <p class="footer-year">💍 Forever & Always 💍</p>
+            <p class="footer-year">Forever & Always</p>
         </footer>
     </div>
 
     <!-- ===== GAME MODALS ===== -->
     <div class="game-modal hidden" id="memory-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('memory-modal')">✕</button>
-            <h2>🧠 Memory Match</h2>
+            <button class="modal-close" onclick="closeModal('memory-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+            <h2>Memory Match</h2>
             <div class="memory-stats">
                 <span>Moves: <strong id="memory-moves">0</strong></span>
                 <span>Pairs: <strong id="memory-pairs">0</strong>/8</span>
                 <span>Time: <strong id="memory-time">0:00</strong></span>
             </div>
             <div class="memory-board" id="memory-board"></div>
-            <button class="btn btn-game" onclick="resetMemoryGame()" style="margin-top:15px;">🔄 Reset</button>
+            <button class="btn btn-game" onclick="resetMemoryGame()" style="margin-top:15px;">Reset</button>
         </div>
     </div>
 
     <div class="game-modal hidden" id="quiz-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('quiz-modal')">✕</button>
-            <h2>💝 Love Quiz</h2>
+            <button class="modal-close" onclick="closeModal('quiz-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+            <h2>Love Quiz</h2>
             <div class="quiz-container" id="quiz-container"></div>
         </div>
     </div>
 
     <div class="game-modal hidden" id="catch-modal">
         <div class="modal-content modal-wide">
-            <button class="modal-close" onclick="closeModal('catch-modal');stopCatchGame()">✕</button>
-            <h2>💖 Catch the Hearts!</h2>
+            <button class="modal-close" onclick="closeModal('catch-modal');stopCatchGame()"><svg viewBox='0 0 24 24' width='16' height='16'><line x1='4' y1='4' x2='20' y2='20' stroke='currentColor' stroke-width='3' stroke-linecap='round'/><line x1='20' y1='4' x2='4' y2='20' stroke='currentColor' stroke-width='3' stroke-linecap='round'/></svg></button>
+            <h2>Catch the Hearts!</h2>
             <div class="catch-stats">
                 <span>Score: <strong id="catch-score">0</strong></span>
                 <span>Time: <strong id="catch-time">30</strong>s</span>
-                <span>Lives: <strong id="catch-lives">❤️❤️❤️</strong></span>
+                <span>Lives: <strong id="catch-lives"></strong></span>
             </div>
             <div class="catch-area" id="catch-area"></div>
         </div>
@@ -327,21 +327,21 @@
 
     <div class="game-modal hidden" id="jigsaw-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('jigsaw-modal')">✕</button>
-            <h2>🧩 Love Jigsaw</h2>
+            <button class="modal-close" onclick="closeModal('jigsaw-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+            <h2>Love Jigsaw</h2>
             <p class="jigsaw-instruction">Arrange the words to form the love message!</p>
             <div class="jigsaw-target" id="jigsaw-target"></div>
             <div class="jigsaw-pieces" id="jigsaw-pieces"></div>
-            <button class="btn btn-game" onclick="checkJigsaw()" style="margin-top:15px;">✓ Check Answer</button>
-            <button class="btn btn-pastel" onclick="resetJigsaw()" style="margin-top:10px;">🔄 New Message</button>
+            <button class="btn btn-game" onclick="checkJigsaw()" style="margin-top:15px;">Check Answer</button>
+            <button class="btn btn-pastel" onclick="resetJigsaw()" style="margin-top:10px;">New Message</button>
             <div class="jigsaw-result" id="jigsaw-result"></div>
         </div>
     </div>
 
     <div class="game-modal hidden" id="jar-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('jar-modal')">✕</button>
-            <h2>🫙 Wish Jar</h2>
+            <button class="modal-close" onclick="closeModal('jar-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+            <h2>Wish Jar</h2>
             <div class="jar-container" id="jar-container">
                 <div class="wish-jar" onclick="pickWish()">
                     <div class="jar-body">
@@ -355,20 +355,20 @@
                 <div class="wish-paper">
                     <p id="wish-text"></p>
                 </div>
-                <button class="btn btn-game" onclick="pickWish()" style="margin-top:15px;">🫙 Pick Another</button>
+                <button class="btn btn-game" onclick="pickWish()" style="margin-top:15px;">Pick Another</button>
             </div>
         </div>
     </div>
 
     <div class="game-modal hidden" id="wheel-modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeModal('wheel-modal')">✕</button>
-            <h2>🎡 Love Wheel</h2>
+            <button class="modal-close" onclick="closeModal('wheel-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
+            <h2>Love Wheel</h2>
             <div class="wheel-container">
                 <canvas id="wheel-canvas" width="320" height="320"></canvas>
-                <div class="wheel-pointer">▼</div>
+                <div class="wheel-pointer"><svg viewBox="0 0 24 24" width="24" height="24"><polygon points="12,20 2,4 22,4" fill="currentColor"/></svg></div>
             </div>
-            <button class="btn btn-game" id="spin-btn" onclick="spinWheel()">🎰 Spin!</button>
+            <button class="btn btn-game" id="spin-btn" onclick="spinWheel()">Spin!</button>
             <div class="wheel-result hidden" id="wheel-result"></div>
         </div>
     </div>
@@ -377,13 +377,16 @@
     <canvas id="confetti-canvas"></canvas>
 
     <!-- Audio -->
-    <button class="music-toggle" id="music-toggle" onclick="toggleMusic()">🔇</button>
+    <button class="music-toggle" id="music-toggle" onclick="toggleMusic()"></button>
 
     <!-- Scripts -->
+    <script src="js/themes.js"></script>
+    <script src="js/svg-images.js"></script>
+    <script src="js/theme-applicator.js"></script>
     <script src="js/quotes.js"></script>
+    <script src="js/confetti.js"></script>
     <script src="js/hearts.js"></script>
     <script src="js/games.js"></script>
-    <script src="js/confetti.js"></script>
     <script src="js/giftbox.js"></script>
     <script src="js/main.js"></script>
 </body>

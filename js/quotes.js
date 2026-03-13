@@ -102,7 +102,7 @@ const loveQuotes = [
     "I love our little moments more than any grand gesture.",
     "You are my forever and always, my beginning and my end.",
     "Thank you for being the most wonderful wife in the world.",
-    "You are the love of my life, Fathima. Happy Birthday, my everything. 💖"
+    "You are the love of my life, Fathima. Happy Birthday, my everything."
 ];
 
 // Loading screen quotes
