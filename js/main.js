@@ -102,6 +102,9 @@ function showMainScreen() {
     initFloatingBackground();
     initHeroParticles();
     initScrollReveal();
+
+    // Start auto theme rotation (every 20s) and shape rotation (every 10s)
+    if (typeof startThemeRotation === 'function') startThemeRotation();
 }
 
 function initNavigation() {
