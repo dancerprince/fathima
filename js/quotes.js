@@ -101,13 +101,13 @@ const loveQuotes = [
     "I love our little moments more than any grand gesture.",
     "You are my forever and always, my beginning and my end.",
     "Thank you for being the most wonderful wife in the world.",
-    "You are the love of my life, Fathima. Happy Birthday, my everything."
+    "You are the love of my life, Fathima Rukshana. Happy Birthday, my everything."
 ];
 
 const loadingQuotes = [
     "Every love story is beautiful, but ours is my favorite...",
     "You are the reason I believe in love...",
-    "My heart beats only for you, Fathima...",
+    "My heart beats only for you, Fathima Rukshana...",
     "Getting ready to celebrate the most beautiful soul...",
     "Preparing a world of love, just for you..."
 ];

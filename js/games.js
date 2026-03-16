@@ -55,7 +55,7 @@ function flipMemoryCard(card,index){
         if(memoryCards[f.index]===memoryCards[s.index]){
             f.card.classList.add('matched');s.card.classList.add('matched');memoryMatched++;
             document.getElementById('memory-pairs').textContent=memoryMatched;memoryFlipped=[];memoryLocked=false;
-            if(memoryMatched===8){clearInterval(memoryTimer);setTimeout(function(){alert('All pairs in '+memoryMoves+' moves & '+memorySeconds+'s! Amazing, Fathima!');},500);}
+            if(memoryMatched===8){clearInterval(memoryTimer);setTimeout(function(){alert('All pairs in '+memoryMoves+' moves & '+memorySeconds+'s! Amazing, Fathima Rukshana!');},500);}
         }else{setTimeout(function(){f.card.classList.remove('flipped');s.card.classList.remove('flipped');memoryFlipped=[];memoryLocked=false;},800);}
     }
 }
@@ -120,7 +120,7 @@ function spawnFallingHeart(){
 function stopCatchGame(){catchRunning=false;if(catchInterval)clearInterval(catchInterval);if(catchTimerInterval)clearInterval(catchTimerInterval);}
 
 // 4. JIGSAW
-var jigsawMessages=["You are the love of my life","Happy Birthday my beautiful Fathima","Every moment with you is magical","You make my world complete","My heart beats only for you","Forever and always my love","You are my greatest blessing"];
+var jigsawMessages=["You are the love of my life","Happy Birthday my beautiful Fathima Rukshana","Every moment with you is magical","You make my world complete","My heart beats only for you","Forever and always my love","You are my greatest blessing"];
 var currentJigsawWords=[],placedWords=[];
 function startJigsaw(){document.getElementById('jigsaw-modal').classList.remove('hidden');resetJigsaw();}
 function resetJigsaw(){

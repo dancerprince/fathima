@@ -17,7 +17,7 @@ function applyThemedImages() {
     }
 
     const navBrand = document.querySelector('.nav-brand');
-    if (navBrand) navBrand.innerHTML = `${SVG.getShape(t.cursorShape, 22, t)} For Fathima ${SVG.getShape(t.cursorShape, 22, t)}`;
+    if (navBrand) navBrand.innerHTML = `${SVG.getShape(t.cursorShape, 22, t)} For Fathima Rukshana ${SVG.getShape(t.cursorShape, 22, t)}`;
 
     const heroBadge = document.querySelector('.hero-badge');
     if (heroBadge) heroBadge.innerHTML = `${SVG.sparkle(16, t.gold)} Today is Special ${SVG.sparkle(16, t.gold)}`;
@@ -87,7 +87,7 @@ function applyThemedImages() {
 
     replaceModalTitles(t);
     updateFavicon(t);
-    document.title = 'Happy Birthday Fathima';
+    document.title = 'Happy Birthday Fathima Rukshana';
 }
 
 function replaceModalTitles(t) {
