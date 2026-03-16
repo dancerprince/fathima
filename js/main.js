@@ -1,6 +1,6 @@
 // ========================================
 // MAIN APPLICATION CONTROLLER
-// Single Theme — No Transitions
+// Love Timeline Intro → Countdown → Main App
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -9,61 +9,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof patchConfetti === 'function') patchConfetti();
     if (typeof applyThemedImages === 'function') applyThemedImages();
     if (typeof Confetti !== 'undefined') Confetti.init();
-    initLoadingScreen();
-});
 
-function initLoadingScreen() {
-    var loadingBar = document.getElementById('loading-bar');
-    var loadingQuote = document.getElementById('loading-quote');
+    // Hide old loading screen immediately — Love Timeline replaces it
     var loadingScreen = document.getElementById('loading-screen');
-    var quoteIdx = 0;
-    if (loadingQuote && typeof loadingQuotes !== 'undefined') {
-        loadingQuote.textContent = loadingQuotes[0];
-        var quoteInterval = setInterval(function() {
-            quoteIdx = (quoteIdx + 1) % loadingQuotes.length;
-            loadingQuote.style.opacity = '0';
-            setTimeout(function() {
-                loadingQuote.textContent = loadingQuotes[quoteIdx];
-                loadingQuote.style.opacity = '1';
-            }, 400);
-        }, 2000);
-        setTimeout(function() { clearInterval(quoteInterval); }, 6000);
-    }
-    createLoadingPetals();
-    var progress = 0;
-    var loadInterval = setInterval(function() {
-        progress += Math.random() * 15 + 5;
-        if (progress >= 100) {
-            progress = 100; clearInterval(loadInterval);
-            if (loadingBar) loadingBar.style.width = '100%';
-            setTimeout(function() {
-                if (loadingScreen) { loadingScreen.style.opacity = '0'; loadingScreen.style.transition = 'opacity 0.6s ease'; }
-                setTimeout(function() { if (loadingScreen) loadingScreen.classList.add('hidden'); startCountdown(); }, 600);
-            }, 500);
-        } else { if (loadingBar) loadingBar.style.width = progress + '%'; }
-    }, 300);
-}
+    if (loadingScreen) loadingScreen.classList.add('hidden');
 
-function createLoadingPetals() {
-    var container = document.getElementById('loading-petals');
-    if (!container) return;
-    if (typeof currentTheme !== 'undefined' && currentTheme && typeof SVG !== 'undefined') {
-        var shapes = currentTheme.floatingShapes || ['heart'];
-        for (var i = 0; i < 15; i++) {
-            var petal = document.createElement('div');
-            petal.className = 'petal';
-            var shapeName = shapes[Math.floor(Math.random() * shapes.length)];
-            var colors = currentTheme.particleColors || ['#FF4081'];
-            var color = colors[Math.floor(Math.random() * colors.length)];
-            var size = Math.random() * 14 + 14;
-            petal.innerHTML = SVG[shapeName] ? SVG[shapeName](size, color, currentTheme.secondary) : SVG.heart(size, color);
-            petal.style.left = Math.random() * 100 + '%';
-            petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
-            petal.style.animationDelay = (Math.random() * 5) + 's';
-            container.appendChild(petal);
-        }
+    // Start the Love Timeline intro → then countdown → then main screen
+    if (typeof LoveTimeline !== 'undefined') {
+        LoveTimeline.init(function() {
+            startCountdown();
+        });
+    } else {
+        startCountdown();
     }
-}
+});
 
 function startCountdown() {
     var countdownScreen = document.getElementById('countdown-screen');
@@ -97,9 +56,14 @@ function showMainScreen() {
     initHeroParticles();
     initScrollReveal();
 
-    // Initialize couple doll (boy left, girl right, salsa on scroll)
+    // Initialize couple doll
     if (typeof CoupleDoll !== 'undefined') {
         setTimeout(function() { CoupleDoll.init(); }, 500);
+    }
+
+    // Insert the Love Roadmap section into the main page
+    if (typeof LoveRoadmap !== 'undefined') {
+        setTimeout(function() { LoveRoadmap.insertIntoPage(); }, 800);
     }
 
     if (typeof startThemeRotation === 'function') startThemeRotation();
@@ -122,7 +86,7 @@ function initNavigation() {
 }
 
 function updateActiveNavLink() {
-    var sections = ['hero', 'quotes', 'timeline', 'games', 'letter'];
+    var sections = ['hero', 'quotes', 'timeline', 'love-roadmap', 'games', 'letter'];
     var scrollPos = window.scrollY + 150;
     sections.forEach(function(id) {
         var section = document.getElementById(id);

@@ -1,516 +1,377 @@
-const CoupleDoll = {
-    container: null, boyEl: null, girlEl: null, heartsEl: null, floorEl: null, labelEl: null,
-    scrollY: 0, lastScrollY: 0, scrollDelta: 0, isScrolling: false, scrollTimer: null,
-    danceAngle: 0, danceSpeed: 0, animFrameId: null, initialized: false,
-    closeness: 0, boyX: 2, girlX: 78, targetBoyX: 2, targetGirlX: 78,
-    phase: 'approach', // approach | dancing
-    currentStep: 0, stepTimer: 0, scrollCount: 0, lastStepScroll: 0,
+/* ============================================
+   REALISTIC SALSA COUPLE — Scroll-Driven Dance
+   Realistic human figures with salsa lifts
+   ============================================ */
+var CoupleDoll = {
+    container: null,
+    coupleEl: null,
+    boyEl: null,
+    girlEl: null,
+    heartsEl: null,
+    labelEl: null,
+    floorEl: null,
+    initialized: false,
+    animFrameId: null,
 
-    salsaSteps: [
-        { name: '💃 Basic Step', duration: 80, armLMul: 1, armRMul: 1, legMul: 1, hipMul: 1, spinGirl: 0 },
-        { name: '🔥 Cross Body Lead', duration: 90, armLMul: 1.5, armRMul: 0.5, legMul: 1.2, hipMul: 1.5, spinGirl: 0 },
-        { name: '🌀 Inside Turn', duration: 70, armLMul: 2, armRMul: 0.3, legMul: 0.8, hipMul: 1, spinGirl: 1 },
-        { name: '✨ Copa', duration: 85, armLMul: 1.8, armRMul: 1.8, legMul: 1.5, hipMul: 2, spinGirl: 0 },
-        { name: '💫 Outside Turn', duration: 70, armLMul: 0.3, armRMul: 2, legMul: 0.8, hipMul: 1, spinGirl: -1 },
-        { name: '🌟 Enchufla', duration: 75, armLMul: 1.3, armRMul: 1.3, legMul: 1.8, hipMul: 1.5, spinGirl: 0.5 },
-        { name: '❤️ Dile Que No', duration: 80, armLMul: 1, armRMul: 1.5, legMul: 1.3, hipMul: 1.8, spinGirl: 0 },
-        { name: '🔥 Setenta', duration: 95, armLMul: 2, armRMul: 2, legMul: 1, hipMul: 1.2, spinGirl: 1.5 },
-        { name: '💃 Cubanito', duration: 85, armLMul: 1.2, armRMul: 1.2, legMul: 2, hipMul: 2, spinGirl: 0 },
-        { name: '🌀 Double Spin', duration: 65, armLMul: 1.5, armRMul: 1.5, legMul: 0.5, hipMul: 0.8, spinGirl: 2 },
+    scrollY: 0,
+    lastScrollY: 0,
+    isScrolling: false,
+    scrollTimer: null,
+
+    boyX: -140,
+    girlX: 140,
+    targetBoyX: -140,
+    targetGirlX: 140,
+    closeness: 0,
+    phase: 'approach',
+
+    currentPose: -1,
+    lastStepScroll: 0,
+    poseTimer: null,
+    stepLabelTimer: null,
+
+    salsaMoves: [
+        { name: '\ud83d\udc83 Basic Salsa Step', pose: 'basic', duration: 2000 },
+        { name: '\ud83d\udd25 Cross Body Lead', pose: 'cross-body', duration: 2200 },
+        { name: '\ud83c\udf00 Inside Turn', pose: 'inside-turn', duration: 1800 },
+        { name: '\u2728 Romantic Dip', pose: 'dip', duration: 2500 },
+        { name: '\ud83c\udf1f Waist Lift', pose: 'lift-waist', duration: 2800, isLift: true },
+        { name: '\ud83d\udcab Overhead Lift', pose: 'lift-overhead', duration: 3200, isLift: true },
+        { name: '\ud83d\udd25 Star Lift', pose: 'lift-star', duration: 3500, isLift: true },
+        { name: '\u2764\ufe0f Lean Back Lift', pose: 'lift-lean', duration: 2800, isLift: true },
+        { name: '\ud83c\udf00 Spinning Lift', pose: 'lift-spin', duration: 3000, isLift: true },
+        { name: '\ud83d\udc83 Basic Salsa Step', pose: 'basic', duration: 2000 },
+        { name: '\u2728 Copa Move', pose: 'cross-body', duration: 2200 },
+        { name: '\ud83d\udc96 Enchufla', pose: 'inside-turn', duration: 1800 }
     ],
 
-    init() {
+    c: function() {
+        var t = (typeof currentTheme !== 'undefined' && currentTheme) ? currentTheme : null;
+        return {
+            primary: t ? t.primary : '#E91E63',
+            secondary: t ? t.secondary : '#9C27B0',
+            accent: t ? t.accent : '#FF4081',
+            gold: t ? t.gold : '#FFD700',
+            skin: '#C68642',
+            skinLight: '#FDDCCC',
+            hair: '#1A1209',
+            hairGirl: '#2C1A0E',
+            suit: t ? t.primary : '#E91E63',
+            suitDark: t ? (t.accentDeep || '#5C2434') : '#5C2434',
+            dress: t ? t.primary : '#E91E63',
+            dressAccent: t ? t.accent : '#FF4081',
+            dressGlow: t ? t.secondary : '#9C27B0'
+        };
+    },
+
+    init: function() {
         if (this.initialized) return;
-        this.createContainer();
-        this.render();
+        this.createDOM();
         this.bindScroll();
-        this.startAnimationLoop();
+        this.startLoop();
         this.initialized = true;
     },
 
-    createContainer() {
+    createDOM: function() {
         this.container = document.createElement('div');
         this.container.id = 'couple-doll-layer';
-        this.container.innerHTML = '<div class="couple-doll-wrapper">' +
-            '<div class="couple-boy"></div>' +
-            '<div class="couple-hearts-container"></div>' +
-            '<div class="couple-girl"></div>' +
-            '</div>' +
-            '<div class="salsa-floor"></div>' +
-            '<div class="dance-step-label"></div>' +
-            '<div class="stage-spotlight stage-spotlight-left"></div>' +
-            '<div class="stage-spotlight stage-spotlight-center"></div>' +
-            '<div class="stage-spotlight stage-spotlight-right"></div>';
+        this.container.classList.add('phase-approach');
+
+        this.container.innerHTML =
+            '<div class="dance-stage">' +
+                '<div class="spotlight spotlight-left"></div>' +
+                '<div class="spotlight spotlight-center"></div>' +
+                '<div class="spotlight spotlight-right"></div>' +
+                '<div class="stage-floor"></div>' +
+                '<div class="couple-container" id="couple-container">' +
+                    '<div class="dancer dancer-boy" id="dancer-boy"></div>' +
+                    '<div class="dance-hearts" id="dance-hearts">' +
+                        '<span class="dance-heart">\ud83d\udc96</span>' +
+                        '<span class="dance-heart">\ud83d\udc95</span>' +
+                        '<span class="dance-heart">\ud83d\udc97</span>' +
+                    '</div>' +
+                    '<div class="dancer dancer-girl" id="dancer-girl"></div>' +
+                '</div>' +
+                '<div class="dance-step-label" id="dance-step-label"></div>' +
+            '</div>';
 
         var mainScreen = document.getElementById('main-screen');
         if (mainScreen) mainScreen.insertBefore(this.container, mainScreen.firstChild);
         else document.body.appendChild(this.container);
 
-        this.boyEl = this.container.querySelector('.couple-boy');
-        this.girlEl = this.container.querySelector('.couple-girl');
-        this.heartsEl = this.container.querySelector('.couple-hearts-container');
-        this.floorEl = this.container.querySelector('.salsa-floor');
-        this.labelEl = this.container.querySelector('.dance-step-label');
+        this.coupleEl = document.getElementById('couple-container');
+        this.boyEl = document.getElementById('dancer-boy');
+        this.girlEl = document.getElementById('dancer-girl');
+        this.heartsEl = document.getElementById('dance-hearts');
+        this.labelEl = document.getElementById('dance-step-label');
+        this.floorEl = this.container.querySelector('.stage-floor');
+
+        this.renderBoy();
+        this.renderGirl();
+
+        var self = this;
+        setTimeout(function() {
+            var el = document.getElementById('couple-doll-layer');
+            if (el) el.classList.add('visible');
+        }, 600);
     },
 
-    c() {
-        var t = (typeof currentTheme !== 'undefined' && currentTheme) ? currentTheme : null;
-        return {
-            bs: t ? t.primary : '#E91E63', bp: t ? t.accentDeep : '#5C2434',
-            bsa: t ? t.secondary : '#9C27B0', gd: t ? t.primary : '#E91E63',
-            gda: t ? t.secondary : '#9C27B0', gdt: t ? t.accent : '#FF4081',
-            gb: t ? t.accent : '#FF4081', bt: t ? t.accent : '#FF4081',
-            hc: t ? t.accent : '#FF4081', sc: t ? t.gold : '#FFD700',
-            sh: 'rgba(233,30,99,0.15)', sb: '#8D5524', sg: '#FDDCCC'
-        };
-    },
-
-    boy(a, b, col, int, step) {
-        var sw = Math.sin(a) * (6 + int * 12) * (step ? step.hipMul : 1);
-        var aL = Math.sin(a) * (14 + int * 20) * (step ? step.armLMul : 1);
-        var aR = Math.sin(a + 1) * (14 + int * 20) * (step ? step.armRMul : 1);
-        var lk = Math.sin(a * 1.5) * (6 + int * 14) * (step ? step.legMul : 1);
-        var ht = Math.sin(a * 0.8) * (3 + int * 6);
-        var hip = Math.sin(a * 2) * int * 7 * (step ? step.hipMul : 1);
-        var sd = Math.sin(a * 1.2) * int * 4;
-        var by = b + sd;
-        var br = Math.sin(Date.now() / 1000) * 1.5;
-
-        return '<svg viewBox="0 0 140 260" width="180" height="340" xmlns="http://www.w3.org/2000/svg">' +
-            '<defs>' +
-            '<linearGradient id="bSG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.bs + '"/><stop offset="100%" stop-color="' + col.bsa + '"/></linearGradient>' +
-            '<linearGradient id="bSK" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.sb + '"/><stop offset="100%" stop-color="#6D4C41"/></linearGradient>' +
-            '<radialGradient id="bGL"><stop offset="0%" stop-color="' + col.bs + '" stop-opacity="0.3"/><stop offset="100%" stop-color="transparent"/></radialGradient>' +
-            '<filter id="bS"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="' + col.bs + '" flood-opacity="0.2"/></filter>' +
-            '<radialGradient id="b3d" cx="35%" cy="30%"><stop offset="0%" stop-color="white" stop-opacity="0.15"/><stop offset="100%" stop-color="transparent"/></radialGradient>' +
-            '</defs>' +
-            '<g transform="translate(0,' + by + ')" filter="url(#bS)">' +
-            // Ground shadow
-            '<ellipse cx="70" cy="252" rx="' + (28 + Math.abs(sw)) + '" ry="6" fill="' + col.sh + '" opacity="0.5"/>' +
-            // Left leg
-            '<g transform="rotate(' + lk + ',56,178)">' +
-            '<rect x="48" y="178" width="18" height="52" rx="8" fill="' + col.bp + '"/>' +
-            '<rect x="48" y="178" width="9" height="52" rx="4" fill="white" opacity="0.04"/>' +
-            '<path d="M44 224Q46 236 60 238Q72 236 70 224L48 224z" fill="#1A1209">' +
-            '<animate attributeName="d" values="M44 224Q46 236 60 238Q72 236 70 224L48 224z;M42 224Q44 238 60 240Q74 238 72 224L48 224z;M44 224Q46 236 60 238Q72 236 70 224L48 224z" dur="1.5s" repeatCount="indefinite"/>' +
-            '</path></g>' +
-            // Right leg
-            '<g transform="rotate(' + (-lk) + ',84,178)">' +
-            '<rect x="76" y="178" width="18" height="52" rx="8" fill="' + col.bp + '"/>' +
-            '<rect x="76" y="178" width="9" height="52" rx="4" fill="white" opacity="0.04"/>' +
-            '<path d="M72 224Q74 236 88 238Q100 236 98 224L76 224z" fill="#1A1209"/>' +
-            '</g>' +
-            // Body
-            '<g transform="rotate(' + (sw * 0.4 + hip * 0.3) + ',70,130)">' +
-            '<rect x="44" y="102" width="52" height="78" rx="12" fill="url(#bSG)"/>' +
-            '<rect x="44" y="102" width="52" height="78" rx="12" fill="url(#b3d)"/>' +
-            '<path d="M56 102L70 118L84 102" stroke="' + col.bt + '" stroke-width="3" fill="none" stroke-linecap="round"/>' +
-            '<g transform="rotate(' + (sw * 0.2) + ',70,116)"><polygon points="66,116 74,116 72,144 68,144" fill="' + col.bt + '" opacity="0.9">' +
-            '<animate attributeName="points" values="66,116 74,116 72,144 68,144;65,116 75,116 73,146 67,146;66,116 74,116 72,144 68,144" dur="2s" repeatCount="indefinite"/>' +
-            '</polygon></g>' +
-            '<circle cx="70" cy="128" r="2.5" fill="#FFF" opacity="0.4"/>' +
-            '<circle cx="70" cy="140" r="2.5" fill="#FFF" opacity="0.4"/>' +
-            '<circle cx="70" cy="152" r="2.5" fill="#FFF" opacity="0.4"/>' +
-            '<path d="M52 108L52 118L60 115" fill="' + col.sc + '" opacity="0.5"/>' +
-            '</g>' +
-            // Left arm
-            '<g transform="rotate(' + (aL - int * 15) + ',50,108)">' +
-            '<rect x="22" y="104" width="22" height="52" rx="10" fill="url(#bSG)"/>' +
-            '<rect x="22" y="104" width="11" height="52" rx="5" fill="url(#b3d)"/>' +
-            '<circle cx="34" cy="162" r="10" fill="url(#bSK)"/>' +
-            '<ellipse cx="30" cy="169" rx="3.5" ry="5" fill="' + col.sb + '" opacity="0.7"/>' +
-            '<ellipse cx="38" cy="169" rx="3.5" ry="5" fill="' + col.sb + '" opacity="0.7"/>' +
-            '</g>' +
-            // Right arm
-            '<g transform="rotate(' + (aR + int * 10) + ',90,108)">' +
-            '<rect x="96" y="104" width="22" height="52" rx="10" fill="url(#bSG)"/>' +
-            '<rect x="96" y="104" width="11" height="52" rx="5" fill="url(#b3d)"/>' +
-            '<circle cx="108" cy="162" r="10" fill="url(#bSK)"/>' +
-            '<ellipse cx="104" cy="169" rx="3.5" ry="5" fill="' + col.sb + '" opacity="0.7"/>' +
-            '<ellipse cx="112" cy="169" rx="3.5" ry="5" fill="' + col.sb + '" opacity="0.7"/>' +
-            '</g>' +
-            // Head
-            '<g transform="rotate(' + ht + ',70,70)">' +
-            '<rect x="62" y="90" width="16" height="18" rx="7" fill="url(#bSK)"/>' +
-            '<rect x="62" y="96" width="16" height="8" rx="4" fill="rgba(0,0,0,0.08)"/>' +
-            // Face - 3D sphere effect
-            '<circle cx="70" cy="62" r="33" fill="url(#bSK)"/>' +
-            '<circle cx="70" cy="62" r="33" fill="url(#b3d)"/>' +
-            '<ellipse cx="60" cy="50" rx="14" ry="10" fill="white" opacity="0.07"/>' +
-            // Hair with 3D volume
-            '<ellipse cx="70" cy="40" rx="36" ry="26" fill="#0D0906"/>' +
-            '<ellipse cx="70" cy="38" rx="32" ry="22" fill="#1A1209"/>' +
-            '<ellipse cx="70" cy="36" rx="28" ry="18" fill="#241A0F" opacity="0.5"/>' +
-            '<ellipse cx="42" cy="52" rx="11" ry="17" fill="#0D0906"/>' +
-            '<ellipse cx="98" cy="52" rx="11" ry="17" fill="#0D0906"/>' +
-            '<ellipse cx="58" cy="32" rx="13" ry="6" fill="white" opacity="0.1" transform="rotate(-15,58,32)">' +
-            '<animate attributeName="opacity" values="0.1;0.18;0.1" dur="4s" repeatCount="indefinite"/></ellipse>' +
-            // Eyebrows
-            '<path d="M52 52Q58 46 64 52" stroke="#0D0906" stroke-width="2.8" fill="none">' +
-            '<animate attributeName="d" values="M52 52Q58 46 64 52;M52 50Q58 44 64 50;M52 52Q58 46 64 52" dur="4s" repeatCount="indefinite"/></path>' +
-            '<path d="M76 52Q82 46 88 52" stroke="#0D0906" stroke-width="2.8" fill="none"/>' +
-            // Eyes with 3D depth + blink
-            '<ellipse cx="58" cy="60" rx="5.5" ry="6" fill="#1A1A1A">' +
-            '<animate attributeName="ry" values="6;0.5;6" dur="4s" repeatCount="indefinite" keyTimes="0;0.025;1"/></ellipse>' +
-            '<ellipse cx="82" cy="60" rx="5.5" ry="6" fill="#1A1A1A">' +
-            '<animate attributeName="ry" values="6;0.5;6" dur="4s" repeatCount="indefinite" keyTimes="0;0.025;1"/></ellipse>' +
-            '<circle cx="60" cy="58" r="2.2" fill="#FFF" opacity="0.9"/>' +
-            '<circle cx="84" cy="58" r="2.2" fill="#FFF" opacity="0.9"/>' +
-            '<circle cx="56" cy="62" r="1" fill="#FFF" opacity="0.4"/>' +
-            '<circle cx="80" cy="62" r="1" fill="#FFF" opacity="0.4"/>' +
-            // Nose - 3D
-            '<ellipse cx="70" cy="68" rx="3" ry="2.5" fill="' + col.sb + '" opacity="0.3"/>' +
-            '<ellipse cx="71" cy="67" rx="1.5" ry="1" fill="white" opacity="0.15"/>' +
-            // Smile
-            '<path d="M56 76Q70 ' + (88 + int * 7) + ' 84 76" stroke="#1A1A1A" stroke-width="2.5" fill="none" stroke-linecap="round">' +
-            '<animate attributeName="d" values="M56 76Q70 ' + (86 + int * 7) + ' 84 76;M56 76Q70 ' + (90 + int * 7) + ' 84 76;M56 76Q70 ' + (86 + int * 7) + ' 84 76" dur="3s" repeatCount="indefinite"/></path>' +
-            (int > 0.5 ? '<path d="M60 76Q70 84 80 76" fill="#B71C1C" opacity="0.12"/>' : '') +
-            // Blush 3D
-            '<ellipse cx="47" cy="72" rx="8" ry="4.5" fill="#E57373" opacity="' + (0.15 + int * 0.35) + '">' +
-            '<animate attributeName="opacity" values="' + (0.15 + int * 0.35) + ';' + (0.35 + int * 0.35) + ';' + (0.15 + int * 0.35) + '" dur="3s" repeatCount="indefinite"/></ellipse>' +
-            '<ellipse cx="93" cy="72" rx="8" ry="4.5" fill="#E57373" opacity="' + (0.15 + int * 0.35) + '"/>' +
-            // Ear hint
-            '<ellipse cx="37" cy="62" rx="5" ry="7" fill="url(#bSK)" opacity="0.6"/>' +
-            '<ellipse cx="103" cy="62" rx="5" ry="7" fill="url(#bSK)" opacity="0.6"/>' +
-            '</g></g></svg>';
-    },
-
-    girl(a, b, col, int, step) {
-        var sw = Math.sin(a + 0.5) * (6 + int * 12) * (step ? step.hipMul : 1);
-        var aL = Math.sin(a + 0.5) * (14 + int * 20) * (step ? step.armLMul : 1);
-        var aR = Math.sin(a + 1.5) * (14 + int * 20) * (step ? step.armRMul : 1);
-        var lk = Math.sin(a * 1.5 + 0.5) * (5 + int * 12) * (step ? step.legMul : 1);
-        var ht = Math.sin(a * 0.8 + 0.3) * (3 + int * 6);
-        var dw = Math.sin(a * 2) * (4 + int * 8);
-        var hip = Math.sin(a * 2 + 0.5) * int * 6 * (step ? step.hipMul : 1);
-        var spin = step ? Math.sin(a * 0.7) * step.spinGirl * 15 : 0;
-        var by = b;
-
-        return '<svg viewBox="0 0 150 240" width="165" height="310" xmlns="http://www.w3.org/2000/svg">' +
-            '<defs>' +
-            '<linearGradient id="gDG" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.gd + '"/><stop offset="100%" stop-color="' + col.gda + '"/></linearGradient>' +
-            '<linearGradient id="gDS" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="white" stop-opacity="0"/><stop offset="50%" stop-color="white" stop-opacity="0.12"/><stop offset="100%" stop-color="white" stop-opacity="0"/></linearGradient>' +
-            '<radialGradient id="gSK"><stop offset="0%" stop-color="#FEE8D6"/><stop offset="100%" stop-color="' + col.sg + '"/></radialGradient>' +
-            '<radialGradient id="gGL"><stop offset="0%" stop-color="' + col.gd + '" stop-opacity="0.25"/><stop offset="100%" stop-color="transparent"/></radialGradient>' +
-            '<radialGradient id="cG"><stop offset="0%" stop-color="#FFF8E1"/><stop offset="100%" stop-color="#F5E6CA"/></radialGradient>' +
-            '<filter id="gS"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="' + col.gd + '" flood-opacity="0.2"/></filter>' +
-            '<radialGradient id="g3d" cx="35%" cy="30%"><stop offset="0%" stop-color="white" stop-opacity="0.15"/><stop offset="100%" stop-color="transparent"/></radialGradient>' +
-            '</defs>' +
-            '<g transform="translate(0,' + by + ')" filter="url(#gS)">' +
-            '<ellipse cx="75" cy="234" rx="' + (30 + Math.abs(sw) + dw) + '" ry="6" fill="' + col.sh + '" opacity="0.5"/>' +
-            // Legs
-            '<g transform="rotate(' + lk + ',62,186)">' +
-            '<rect x="55" y="186" width="15" height="38" rx="6" fill="url(#gSK)"/>' +
-            '<path d="M50 218Q52 228 64 230Q74 228 72 218L55 218z" fill="' + col.gda + '"/>' +
-            '<rect x="56" y="225" width="5" height="8" rx="2" fill="' + col.gda + '" transform="rotate(-5,58,228)"/>' +
-            '</g>' +
-            '<g transform="rotate(' + (-lk) + ',88,186)">' +
-            '<rect x="81" y="186" width="15" height="38" rx="6" fill="url(#gSK)"/>' +
-            '<path d="M76 218Q78 228 90 230Q100 228 98 218L81 218z" fill="' + col.gda + '"/>' +
-            '<rect x="82" y="225" width="5" height="8" rx="2" fill="' + col.gda + '" transform="rotate(-5,84,228)"/>' +
-            '</g>' +
-            // Dress with flowing salsa movement
-            '<g transform="rotate(' + (sw * 0.3 + hip * 0.2 + spin) + ',75,120)">' +
-            '<path d="M48 106L' + (30 - dw * 2) + ' 200Q75 ' + (206 + dw * 2) + ' ' + (120 + dw * 2) + ' 200L102 106Q75 100 48 106z" fill="url(#gDG)">' +
-            '<animate attributeName="d" values="M48 106L' + (30 - dw) + ' 200Q75 ' + (204 + dw) + ' ' + (120 + dw) + ' 200L102 106Q75 100 48 106z;M48 106L' + (26 - dw * 2) + ' 198Q75 ' + (210 + dw * 2) + ' ' + (124 + dw * 2) + ' 198L102 106Q75 100 48 106z;M48 106L' + (30 - dw) + ' 200Q75 ' + (204 + dw) + ' ' + (120 + dw) + ' 200L102 106Q75 100 48 106z" dur="2s" repeatCount="indefinite"/>' +
-            '</path>' +
-            '<path d="M48 106L' + (30 - dw) + ' 200Q75 ' + (204 + dw) + ' ' + (120 + dw) + ' 200L102 106Q75 100 48 106z" fill="url(#gDS)"/>' +
-            // Shimmer dots on dress
-            '<circle cx="58" cy="132" r="2.5" fill="#FFF" opacity="0.3"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="88" cy="142" r="2" fill="#FFF" opacity="0.25"><animate attributeName="opacity" values="0.25;0.6;0.25" dur="2.5s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="68" cy="162" r="2.5" fill="#FFF" opacity="0.3"><animate attributeName="opacity" values="0.3;0.65;0.3" dur="1.8s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="92" cy="178" r="2" fill="#FFF" opacity="0.2"/>' +
-            '<circle cx="50" cy="182" r="2" fill="#FFF" opacity="0.25"/>' +
-            // Waist ribbon
-            '<ellipse cx="75" cy="114" rx="28" ry="5" fill="' + col.gdt + '" opacity="0.7"><animate attributeName="ry" values="5;6.5;5" dur="2s" repeatCount="indefinite"/></ellipse>' +
-            // Dress bottom ruffle
-            '<path d="M' + (32 - dw) + ' 196Q' + (48 - dw) + ' ' + (202 + dw * 2) + ' 75 196Q' + (102 + dw) + ' ' + (202 + dw * 2) + ' ' + (118 + dw) + ' 196" stroke="' + col.gdt + '" stroke-width="3" fill="none" opacity="0.5">' +
-            '<animate attributeName="d" values="M32 196Q48 202 75 196Q102 202 118 196;M28 194Q46 208 75 194Q104 208 122 194;M32 196Q48 202 75 196Q102 202 118 196" dur="1.5s" repeatCount="indefinite"/></path>' +
-            '</g>' +
-            // Upper body
-            '<rect x="56" y="96" width="38" height="18" rx="8" fill="url(#gSK)"/>' +
-            '<path d="M56 106Q75 113 94 106" stroke="' + col.gd + '" stroke-width="2" fill="' + col.gd + '" opacity="0.4"/>' +
-            // Arms
-            '<g transform="rotate(' + (aL - int * 22) + ',52,106)">' +
-            '<rect x="26" y="102" width="20" height="48" rx="9" fill="url(#gSK)"/>' +
-            '<rect x="26" y="102" width="10" height="48" rx="5" fill="url(#g3d)"/>' +
-            '<ellipse cx="36" cy="144" rx="6.5" ry="3" fill="' + col.sc + '" opacity="0.5" stroke="' + col.sc + '" stroke-width="1">' +
-            '<animate attributeName="opacity" values="0.5;0.8;0.5" dur="2s" repeatCount="indefinite"/></ellipse>' +
-            '<circle cx="36" cy="153" r="9" fill="url(#gSK)"/>' +
-            '<ellipse cx="32" cy="159" rx="3.5" ry="5" fill="' + col.sg + '" opacity="0.7"/>' +
-            '<ellipse cx="40" cy="159" rx="3.5" ry="5" fill="' + col.sg + '" opacity="0.7"/>' +
-            '</g>' +
-            '<g transform="rotate(' + (aR + int * 18) + ',98,106)">' +
-            '<rect x="104" y="102" width="20" height="48" rx="9" fill="url(#gSK)"/>' +
-            '<rect x="104" y="102" width="10" height="48" rx="5" fill="url(#g3d)"/>' +
-            '<ellipse cx="114" cy="144" rx="6.5" ry="3" fill="' + col.sc + '" opacity="0.5"/>' +
-            '<circle cx="114" cy="153" r="9" fill="url(#gSK)"/>' +
-            '</g>' +
-            // Head
-            '<g transform="rotate(' + (ht + spin * 0.3) + ',75,58)">' +
-            '<rect x="67" y="82" width="16" height="18" rx="7" fill="url(#gSK)"/>' +
-            // Face with 3D roundness
-            '<circle cx="75" cy="55" r="31" fill="url(#gSK)"/>' +
-            '<circle cx="75" cy="55" r="31" fill="url(#g3d)"/>' +
-            '<ellipse cx="65" cy="44" rx="12" ry="9" fill="white" opacity="0.08"/>' +
-            // Curly hair with 3D volume
-            '<ellipse cx="75" cy="36" rx="38" ry="28" fill="url(#cG)"/>' +
-            '<ellipse cx="75" cy="34" rx="34" ry="24" fill="#FFF8E1" opacity="0.5"/>' +
-            // Hair curls - left
-            '<circle cx="38" cy="32" r="12" fill="#FFF8E1" opacity="0.9"><animate attributeName="r" values="12;13;12" dur="3s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="36" cy="47" r="13" fill="#F5E6CA" opacity="0.85"><animate attributeName="r" values="13;14;13" dur="3.5s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="38" cy="63" r="12" fill="#FFF8E1" opacity="0.8"/>' +
-            '<circle cx="40" cy="77" r="11" fill="#F5E6CA" opacity="0.75"><animate attributeName="cy" values="77;79;77" dur="2s" repeatCount="indefinite"/></circle>' +
-            // Hair curls - right
-            '<circle cx="112" cy="32" r="12" fill="#FFF8E1" opacity="0.9"><animate attributeName="r" values="12;13;12" dur="3.2s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="114" cy="47" r="13" fill="#F5E6CA" opacity="0.85"/>' +
-            '<circle cx="112" cy="63" r="12" fill="#FFF8E1" opacity="0.8"/>' +
-            '<circle cx="110" cy="77" r="11" fill="#F5E6CA" opacity="0.75"/>' +
-            // Hair curls - top
-            '<circle cx="52" cy="17" r="11" fill="#FFF8E1" opacity="0.9"/>' +
-            '<circle cx="75" cy="13" r="12" fill="#F5E6CA" opacity="0.9"><animate attributeName="r" values="12;13;12" dur="4s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="98" cy="17" r="11" fill="#FFF8E1" opacity="0.9"/>' +
-            '<circle cx="63" cy="11" r="9" fill="#FFF8E1" opacity="0.85"/>' +
-            '<circle cx="87" cy="11" r="9" fill="#FFF8E1" opacity="0.85"/>' +
-            // Hair shine
-            '<ellipse cx="65" cy="24" rx="9" ry="4" fill="white" opacity="0.14" transform="rotate(-10,65,24)"><animate attributeName="opacity" values="0.14;0.22;0.14" dur="4s" repeatCount="indefinite"/></ellipse>' +
-            // Bow with 3D
-            '<g transform="translate(100,22) rotate(' + (15 + sw * 0.5) + ')">' +
-            '<ellipse cx="-10" cy="0" rx="11" ry="7" fill="' + col.gb + '" opacity="0.9"><animate attributeName="rx" values="11;12;11" dur="2s" repeatCount="indefinite"/></ellipse>' +
-            '<ellipse cx="10" cy="0" rx="11" ry="7" fill="' + col.gb + '" opacity="0.9"/>' +
-            '<circle cx="0" cy="0" r="4.5" fill="' + col.gdt + '"/>' +
-            '<circle cx="0" cy="0" r="2" fill="white" opacity="0.4"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="2s" repeatCount="indefinite"/></circle>' +
-            '</g>' +
-            // Eyes with lashes and 3D
-            '<ellipse cx="64" cy="56" rx="5.5" ry="6.5" fill="#1A1A1A"><animate attributeName="ry" values="6.5;0.5;6.5" dur="4.5s" repeatCount="indefinite" keyTimes="0;0.025;1"/></ellipse>' +
-            '<ellipse cx="86" cy="56" rx="5.5" ry="6.5" fill="#1A1A1A"><animate attributeName="ry" values="6.5;0.5;6.5" dur="4.5s" repeatCount="indefinite" keyTimes="0;0.025;1"/></ellipse>' +
-            '<circle cx="66" cy="54" r="2.5" fill="#FFF" opacity="0.9"/>' +
-            '<circle cx="88" cy="54" r="2.5" fill="#FFF" opacity="0.9"/>' +
-            '<circle cx="62" cy="58" r="1" fill="#FFF" opacity="0.4"/>' +
-            '<circle cx="84" cy="58" r="1" fill="#FFF" opacity="0.4"/>' +
-            // Lashes
-            '<path d="M59 49L55 44" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>' +
-            '<path d="M63 48L62 43" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>' +
-            '<path d="M81 49L78 44" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>' +
-            '<path d="M85 48L84 43" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>' +
-            '<path d="M90 49L94 44" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round"/>' +
-            // Nose 3D
-            '<ellipse cx="75" cy="64" rx="2.5" ry="2" fill="' + col.sg + '" opacity="0.4"/>' +
-            '<ellipse cx="76" cy="63" rx="1.2" ry="0.8" fill="white" opacity="0.2"/>' +
-            // Smile
-            '<path d="M62 70Q75 ' + (82 + int * 7) + ' 88 70" stroke="#E57373" stroke-width="2.5" fill="none" stroke-linecap="round">' +
-            '<animate attributeName="d" values="M62 70Q75 ' + (80 + int * 7) + ' 88 70;M62 70Q75 ' + (84 + int * 7) + ' 88 70;M62 70Q75 ' + (80 + int * 7) + ' 88 70" dur="3s" repeatCount="indefinite"/></path>' +
-            (int > 0.5 ? '<path d="M66 70Q75 78 84 70" fill="#B71C1C" opacity="0.1"/>' : '') +
-            // Blush
-            '<ellipse cx="51" cy="68" rx="8" ry="4.5" fill="#FFAB91" opacity="' + (0.15 + int * 0.4) + '"><animate attributeName="opacity" values="' + (0.15 + int * 0.4) + ';' + (0.4 + int * 0.4) + ';' + (0.15 + int * 0.4) + '" dur="3s" repeatCount="indefinite"/></ellipse>' +
-            '<ellipse cx="99" cy="68" rx="8" ry="4.5" fill="#FFAB91" opacity="' + (0.15 + int * 0.4) + '"/>' +
-            // Necklace
-            '<path d="M60 84Q75 93 90 84" stroke="' + col.sc + '" stroke-width="1.8" fill="none" opacity="0.5"><animate attributeName="opacity" values="0.5;0.8;0.5" dur="3s" repeatCount="indefinite"/></path>' +
-            '<circle cx="75" cy="92" r="4" fill="' + col.sc + '" opacity="0.7"><animate attributeName="r" values="4;4.5;4" dur="2s" repeatCount="indefinite"/></circle>' +
-            '<circle cx="75" cy="92" r="1.8" fill="white" opacity="0.5"><animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/></circle>' +
-            // Earrings
-            '<circle cx="37" cy="68" r="3" fill="' + col.sc + '" opacity="0.5"/>' +
-            '<circle cx="113" cy="68" r="3" fill="' + col.sc + '" opacity="0.5"/>' +
-            '</g></g></svg>';
-    },
-
-    hearts(a, col, int) {
-        if (int < 0.3) return '';
-        var f1 = Math.sin(a * 1.5) * 10;
-        var f2 = Math.sin(a * 1.2 + 1) * 12;
-        var f3 = Math.sin(a * 1.8 + 2) * 8;
-        var s1 = 0.7 + Math.sin(a) * 0.3;
-        var s2 = 0.5 + Math.sin(a + 1) * 0.25;
-        var s3 = 0.4 + Math.sin(a + 2) * 0.2;
-        var op = Math.min(1, (int - 0.3) / 0.7);
-        return '<svg viewBox="0 0 80 140" width="80" height="140" xmlns="http://www.w3.org/2000/svg">' +
-            '<defs><filter id="hG"><feGaussianBlur stdDeviation="3" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter></defs>' +
-            '<g opacity="' + op + '" filter="url(#hG)">' +
-            '<g transform="translate(40,' + (55 + f1) + ') scale(' + s1 + ')" opacity="0.85">' +
-            '<path d="M0-10C-5-17-15-17-15-8C-15 0 0 10 0 10C0 10 15 0 15-8C15-17 5-17 0-10z" fill="' + col.hc + '"><animate attributeName="d" values="M0-10C-5-17-15-17-15-8C-15 0 0 10 0 10C0 10 15 0 15-8C15-17 5-17 0-10z;M0-12C-6-20-18-20-18-10C-18 0 0 12 0 12C0 12 18 0 18-10C18-20 6-20 0-12z;M0-10C-5-17-15-17-15-8C-15 0 0 10 0 10C0 10 15 0 15-8C15-17 5-17 0-10z" dur="1.5s" repeatCount="indefinite"/></path></g>' +
-            '<g transform="translate(25,' + (30 + f2) + ') scale(' + s2 + ')" opacity="0.65">' +
-            '<path d="M0-8C-4-13-11-13-11-6C-11 0 0 8 0 8C0 8 11 0 11-6C11-13 4-13 0-8z" fill="' + col.gd + '"/></g>' +
-            '<g transform="translate(55,' + (80 + f3) + ') scale(' + s3 + ')" opacity="0.5">' +
-            '<path d="M0-6C-3-10-9-10-9-4C-9 0 0 6 0 6C0 6 9 0 9-4C9-10 3-10 0-6z" fill="' + col.sc + '"/></g>' +
-            '<g transform="translate(15,' + (20 + f3) + ')" opacity="' + (0.4 + Math.sin(a * 3) * 0.4) + '"><path d="M0-5L1.5-1.5L5 0L1.5 1.5L0 5L-1.5 1.5L-5 0L-1.5-1.5z" fill="' + col.sc + '"><animateTransform attributeName="transform" type="rotate" values="0;360" dur="4s" repeatCount="indefinite"/></path></g>' +
-            '<g transform="translate(60,' + (100 + f1) + ')" opacity="' + (0.3 + Math.sin(a * 2.5) * 0.3) + '"><path d="M0-4L1-1L4 0L1 1L0 4L-1 1L-4 0L-1-1z" fill="' + col.sc + '"><animateTransform attributeName="transform" type="rotate" values="0;-360" dur="5s" repeatCount="indefinite"/></path></g>' +
-            '</g></svg>';
-    },
-
-    render() {
-        if (!this.boyEl || !this.girlEl) return;
+    renderBoy: function() {
+        if (!this.boyEl) return;
         var col = this.c();
-        var a = this.danceAngle;
-        var b = Math.sin(a * 2) * (2 + this.closeness * 5);
-        var int = this.closeness;
-        var step = this.phase === 'dancing' ? this.salsaSteps[this.currentStep] : null;
-
-        this.boyEl.innerHTML = this.boy(a, b, col, int, step);
-        this.girlEl.innerHTML = this.girl(a + 0.3, b, col, int, step);
-        if (this.heartsEl) this.heartsEl.innerHTML = this.hearts(a, col, int);
+        this.boyEl.innerHTML =
+        '<svg viewBox="0 0 120 300" width="120" height="300" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs>' +
+            '<linearGradient id="boySuit" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.suit + '"/><stop offset="100%" stop-color="' + col.suitDark + '"/></linearGradient>' +
+            '<linearGradient id="boySkin" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.skin + '"/><stop offset="100%" stop-color="#A0522D"/></linearGradient>' +
+            '<radialGradient id="boyFace" cx="45%" cy="35%"><stop offset="0%" stop-color="#D4A574"/><stop offset="100%" stop-color="' + col.skin + '"/></radialGradient>' +
+            '<filter id="bSh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.25)"/></filter>' +
+        '</defs>' +
+        '<g filter="url(#bSh)">' +
+        '<ellipse cx="60" cy="295" rx="30" ry="5" fill="rgba(0,0,0,0.15)"/>' +
+        '<g><path d="M42 185 L38 240 Q38 245 42 245 L54 245 Q58 245 58 240 L55 185Z" fill="' + col.suitDark + '"/>' +
+        '<path d="M36 242 Q34 250 34 255 Q34 262 42 262 L56 262 Q62 262 62 256 L60 242Z" fill="#1A1209"/></g>' +
+        '<g><path d="M64 185 L62 240 Q62 245 66 245 L78 245 Q82 245 82 240 L80 185Z" fill="' + col.suitDark + '"/>' +
+        '<path d="M60 242 Q58 250 58 255 Q58 262 66 262 L80 262 Q86 262 86 256 L84 242Z" fill="#1A1209"/></g>' +
+        '<path d="M38 100 Q35 103 35 110 L35 188 Q35 192 40 192 L80 192 Q85 192 85 188 L85 110 Q85 103 82 100Z" fill="url(#boySuit)"/>' +
+        '<path d="M48 100 L60 125 L72 100" stroke="' + col.gold + '" stroke-width="1.5" fill="none" opacity="0.6"/>' +
+        '<path d="M52 100 L60 118 L68 100" fill="rgba(255,255,255,0.15)"/>' +
+        '<circle cx="60" cy="132" r="2" fill="' + col.gold + '" opacity="0.5"/><circle cx="60" cy="148" r="2" fill="' + col.gold + '" opacity="0.5"/><circle cx="60" cy="164" r="2" fill="' + col.gold + '" opacity="0.5"/>' +
+        '<rect x="37" y="183" width="46" height="6" rx="2" fill="#1A1209"/><rect x="56" y="182" width="8" height="8" rx="1.5" fill="' + col.gold + '" opacity="0.6"/>' +
+        '<g><path d="M35 103 L22 107 Q16 109 18 125 L22 158 Q24 163 28 161 L34 153 Q36 148 35 138Z" fill="url(#boySuit)"/>' +
+        '<ellipse cx="24" cy="165" rx="8" ry="10" fill="url(#boySkin)"/></g>' +
+        '<g><path d="M85 103 L98 107 Q104 109 102 125 L98 158 Q96 163 92 161 L86 153 Q84 148 85 138Z" fill="url(#boySuit)"/>' +
+        '<ellipse cx="96" cy="165" rx="8" ry="10" fill="url(#boySkin)"/></g>' +
+        '<rect x="52" y="84" width="16" height="18" rx="7" fill="url(#boySkin)"/>' +
+        '<path d="M48 100 L52 90 L60 95 L68 90 L72 100" fill="rgba(255,255,255,0.2)"/>' +
+        '<g><ellipse cx="60" cy="60" rx="25" ry="28" fill="url(#boyFace)"/>' +
+        '<path d="M35 50 Q35 23 60 20 Q85 23 85 50 L85 43 Q85 17 60 13 Q35 17 35 43Z" fill="' + col.hair + '"/>' +
+        '<ellipse cx="35" cy="50" rx="5" ry="12" fill="' + col.hair + '"/><ellipse cx="85" cy="50" rx="5" ry="12" fill="' + col.hair + '"/>' +
+        '<ellipse cx="55" cy="25" rx="10" ry="4" fill="rgba(255,255,255,0.08)" transform="rotate(-8,55,25)"/>' +
+        '<path d="M44 47 Q50 43 56 47" stroke="' + col.hair + '" stroke-width="2.2" fill="none"/><path d="M64 47 Q70 43 76 47" stroke="' + col.hair + '" stroke-width="2.2" fill="none"/>' +
+        '<g><ellipse cx="50" cy="55" rx="5" ry="4.5" fill="white"/><circle cx="51" cy="55" r="3" fill="#2C1810"/><circle cx="52" cy="54" r="1.2" fill="white" opacity="0.9"/>' +
+        '<animate attributeName="opacity" values="1;1;0;1;1" dur="4s" repeatCount="indefinite" keyTimes="0;0.48;0.5;0.52;1"/></g>' +
+        '<g><ellipse cx="70" cy="55" rx="5" ry="4.5" fill="white"/><circle cx="71" cy="55" r="3" fill="#2C1810"/><circle cx="72" cy="54" r="1.2" fill="white" opacity="0.9"/></g>' +
+        '<path d="M58 58 Q60 65 62 58" stroke="' + col.skin + '" stroke-width="1.5" fill="none" opacity="0.4"/>' +
+        '<path d="M48 71 Q60 81 72 71" stroke="#5C3A28" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<ellipse cx="43" cy="66" rx="6" ry="3.5" fill="#E57373" opacity="0.15"/><ellipse cx="77" cy="66" rx="6" ry="3.5" fill="#E57373" opacity="0.15"/>' +
+        '<ellipse cx="35" cy="58" rx="4" ry="6" fill="url(#boySkin)" opacity="0.7"/><ellipse cx="85" cy="58" rx="4" ry="6" fill="url(#boySkin)" opacity="0.7"/>' +
+        '</g></g></svg>';
     },
 
-    updatePositions() {
-        if (!this.boyEl || !this.girlEl || !this.container) return;
+    renderGirl: function() {
+        if (!this.girlEl) return;
+        var col = this.c();
+        this.girlEl.innerHTML =
+        '<svg viewBox="0 0 130 300" width="130" height="300" xmlns="http://www.w3.org/2000/svg">' +
+        '<defs>' +
+            '<linearGradient id="gDr" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.dress + '"/><stop offset="100%" stop-color="' + col.dressGlow + '"/></linearGradient>' +
+            '<linearGradient id="gDSh" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="white" stop-opacity="0"/><stop offset="50%" stop-color="white" stop-opacity="0.12"/><stop offset="100%" stop-color="white" stop-opacity="0"/></linearGradient>' +
+            '<linearGradient id="gSk" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="' + col.skinLight + '"/><stop offset="100%" stop-color="#E8C4A8"/></linearGradient>' +
+            '<radialGradient id="gFc" cx="45%" cy="35%"><stop offset="0%" stop-color="#FEE8D6"/><stop offset="100%" stop-color="' + col.skinLight + '"/></radialGradient>' +
+            '<radialGradient id="gHr"><stop offset="0%" stop-color="#3D2414"/><stop offset="100%" stop-color="' + col.hairGirl + '"/></radialGradient>' +
+            '<filter id="gSh"><feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="rgba(0,0,0,0.2)"/></filter>' +
+        '</defs>' +
+        '<g filter="url(#gSh)">' +
+        '<ellipse cx="65" cy="295" rx="35" ry="5" fill="rgba(0,0,0,0.12)"/>' +
+        '<g><path d="M48 225 L46 262 Q46 268 52 268 L58 268 Q62 268 62 264 L60 225Z" fill="url(#gSk)"/>' +
+        '<path d="M44 264 L42 268 Q40 275 46 276 L60 276 Q65 276 65 272 L64 264Z" fill="' + col.dress + '"/>' +
+        '<rect x="44" y="276" width="4" height="8" rx="1" fill="' + col.suitDark + '" transform="rotate(-8,46,280)"/></g>' +
+        '<g><path d="M68 225 L66 262 Q66 268 72 268 L78 268 Q82 268 82 264 L80 225Z" fill="url(#gSk)"/>' +
+        '<path d="M64 264 L62 268 Q60 275 66 276 L80 276 Q85 276 85 272 L84 264Z" fill="' + col.dress + '"/>' +
+        '<rect x="66" y="276" width="4" height="8" rx="1" fill="' + col.suitDark + '" transform="rotate(-8,68,280)"/></g>' +
+        '<g><path d="M42 97 Q38 100 35 110 L25 230 Q30 245 65 250 Q100 245 105 230 L95 110 Q92 100 88 97Z" fill="url(#gDr)">' +
+        '<animate attributeName="d" values="M42 97 Q38 100 35 110 L25 230 Q30 245 65 250 Q100 245 105 230 L95 110 Q92 100 88 97Z;M42 97 Q38 100 35 110 L22 228 Q28 248 65 252 Q102 248 108 228 L95 110 Q92 100 88 97Z;M42 97 Q38 100 35 110 L25 230 Q30 245 65 250 Q100 245 105 230 L95 110 Q92 100 88 97Z" dur="3s" repeatCount="indefinite"/></path>' +
+        '<path d="M42 97 Q38 100 35 110 L25 230 Q30 245 65 250 Q100 245 105 230 L95 110 Q92 100 88 97Z" fill="url(#gDSh)" opacity="0.7"/>' +
+        '<path d="M25 228 Q35 238 45 228 Q55 238 65 228 Q75 238 85 228 Q95 238 105 228" stroke="' + col.dressAccent + '" stroke-width="2" fill="none" opacity="0.5">' +
+        '<animate attributeName="d" values="M25 228 Q35 238 45 228 Q55 238 65 228 Q75 238 85 228 Q95 238 105 228;M22 226 Q34 240 46 226 Q56 242 66 226 Q76 240 86 226 Q96 242 108 226;M25 228 Q35 238 45 228 Q55 238 65 228 Q75 238 85 228 Q95 238 105 228" dur="2.5s" repeatCount="indefinite"/></path>' +
+        '<circle cx="50" cy="135" r="1.5" fill="white" opacity="0.4"><animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="78" cy="150" r="1.2" fill="white" opacity="0.3"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2.5s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="55" cy="170" r="1.5" fill="white" opacity="0.35"/><circle cx="80" cy="185" r="1.2" fill="white" opacity="0.3"/>' +
+        '<path d="M40 110 Q65 105 90 110 Q92 115 90 120 Q65 115 40 120 Q38 115 40 110Z" fill="' + col.dressAccent + '" opacity="0.7"/>' +
+        '<path d="M85 115 L95 130 Q92 135 88 133 L82 120" fill="' + col.dressAccent + '" opacity="0.6"/></g>' +
+        '<path d="M45 91 Q65 85 85 91 L88 103 Q65 97 42 103Z" fill="url(#gSk)"/>' +
+        '<g><path d="M38 97 L24 103 Q16 107 14 125 L16 158 Q18 165 24 163 L32 151 Q35 143 36 131Z" fill="url(#gSk)"/>' +
+        '<ellipse cx="20" cy="153" rx="6" ry="3" fill="' + col.gold + '" opacity="0.6"/>' +
+        '<ellipse cx="22" cy="167" rx="7" ry="9" fill="url(#gSk)"/></g>' +
+        '<g><path d="M92 97 L106 103 Q114 107 116 125 L114 158 Q112 165 106 163 L98 151 Q95 143 94 131Z" fill="url(#gSk)"/>' +
+        '<ellipse cx="110" cy="153" rx="6" ry="3" fill="' + col.gold + '" opacity="0.6"/>' +
+        '<ellipse cx="108" cy="167" rx="7" ry="9" fill="url(#gSk)"/></g>' +
+        '<rect x="55" y="77" width="20" height="18" rx="8" fill="url(#gSk)"/>' +
+        '<path d="M48 91 Q65 100 82 91" stroke="' + col.gold + '" stroke-width="1.5" fill="none" opacity="0.6"/>' +
+        '<circle cx="65" cy="98" r="3.5" fill="' + col.gold + '" opacity="0.7"><animate attributeName="r" values="3.5;4;3.5" dur="2s" repeatCount="indefinite"/></circle>' +
+        '<circle cx="65" cy="98" r="1.5" fill="white" opacity="0.5"/>' +
+        '<g><ellipse cx="65" cy="51" rx="26" ry="30" fill="url(#gFc)"/>' +
+        '<path d="M39 43 Q38 15 65 9 Q92 15 91 43 L91 35 Q90 7 65 1 Q40 7 39 35Z" fill="url(#gHr)"/>' +
+        '<path d="M39 43 Q36 50 34 65 Q32 75 34 87 Q36 90 38 85 Q38 70 40 55Z" fill="url(#gHr)"/>' +
+        '<path d="M91 43 Q94 50 96 65 Q98 75 96 87 Q94 90 92 85 Q92 70 90 55Z" fill="url(#gHr)"/>' +
+        '<circle cx="34" cy="89" r="5" fill="' + col.hairGirl + '" opacity="0.8"/><circle cx="96" cy="89" r="5" fill="' + col.hairGirl + '" opacity="0.8"/>' +
+        '<ellipse cx="55" cy="17" rx="10" ry="4" fill="rgba(255,255,255,0.1)" transform="rotate(-10,55,17)"><animate attributeName="opacity" values="0.1;0.18;0.1" dur="4s" repeatCount="indefinite"/></ellipse>' +
+        '<path d="M46 39 Q53 34 60 39" stroke="' + col.hairGirl + '" stroke-width="1.8" fill="none"/><path d="M70 39 Q77 34 84 39" stroke="' + col.hairGirl + '" stroke-width="1.8" fill="none"/>' +
+        '<g><ellipse cx="53" cy="47" rx="6" ry="5.5" fill="white"/><circle cx="54" cy="47" r="3.5" fill="#3B2218"/><circle cx="55.5" cy="46" r="1.5" fill="white" opacity="0.9"/>' +
+        '<path d="M46 43 Q53 40 60 43" stroke="' + col.hairGirl + '" stroke-width="1.2" fill="none"/>' +
+        '<line x1="47" y1="43" x2="44" y2="39" stroke="' + col.hairGirl + '" stroke-width="1.5" stroke-linecap="round"/>' +
+        '<line x1="50" y1="42" x2="49" y2="38" stroke="' + col.hairGirl + '" stroke-width="1.2" stroke-linecap="round"/>' +
+        '<line x1="56" y1="42" x2="57" y2="38" stroke="' + col.hairGirl + '" stroke-width="1.2" stroke-linecap="round"/></g>' +
+        '<g><ellipse cx="77" cy="47" rx="6" ry="5.5" fill="white"/><circle cx="78" cy="47" r="3.5" fill="#3B2218"/><circle cx="79.5" cy="46" r="1.5" fill="white" opacity="0.9"/>' +
+        '<path d="M70 43 Q77 40 84 43" stroke="' + col.hairGirl + '" stroke-width="1.2" fill="none"/>' +
+        '<line x1="83" y1="43" x2="86" y2="39" stroke="' + col.hairGirl + '" stroke-width="1.5" stroke-linecap="round"/>' +
+        '<line x1="80" y1="42" x2="81" y2="38" stroke="' + col.hairGirl + '" stroke-width="1.2" stroke-linecap="round"/></g>' +
+        '<path d="M63 51 Q65 58 67 51" stroke="' + col.skinLight + '" stroke-width="1.2" fill="none" opacity="0.35"/>' +
+        '<path d="M55 63 Q60 59 65 63 Q70 59 75 63" stroke="#D4515E" stroke-width="1.5" fill="#E8697A" opacity="0.7"/>' +
+        '<path d="M55 63 Q65 70 75 63" stroke="#C44858" stroke-width="1" fill="#D4616E" opacity="0.6"/>' +
+        '<ellipse cx="65" cy="62" rx="3" ry="1" fill="white" opacity="0.2"/>' +
+        '<ellipse cx="43" cy="57" rx="7" ry="4" fill="#FFAB91" opacity="0.2"><animate attributeName="opacity" values="0.2;0.35;0.2" dur="3s" repeatCount="indefinite"/></ellipse>' +
+        '<ellipse cx="87" cy="57" rx="7" ry="4" fill="#FFAB91" opacity="0.2"/>' +
+        '<circle cx="38" cy="57" r="3" fill="' + col.gold + '" opacity="0.6"/><path d="M38 60 L36 67 L40 67Z" fill="' + col.gold + '" opacity="0.5"/>' +
+        '<circle cx="92" cy="57" r="3" fill="' + col.gold + '" opacity="0.6"/><path d="M92 60 L90 67 L94 67Z" fill="' + col.gold + '" opacity="0.5"/>' +
+        '<g transform="translate(88,23) rotate(15)"><circle cx="0" cy="0" r="6" fill="' + col.dressAccent + '" opacity="0.8"/>' +
+        '<circle cx="-5" cy="-3" r="4" fill="' + col.dress + '" opacity="0.7"/><circle cx="4" cy="-4" r="4" fill="' + col.dress + '" opacity="0.7"/>' +
+        '<circle cx="0" cy="0" r="2.5" fill="' + col.gold + '" opacity="0.7"/></g>' +
+        '</g></g></svg>';
+    },
+
+    bindScroll: function() {
+        var self = this;
+        window.addEventListener('scroll', function() {
+            self.scrollY = window.scrollY || window.pageYOffset;
+            self.lastScrollY = self.scrollY;
+            self.isScrolling = true;
+
+            clearTimeout(self.scrollTimer);
+            self.scrollTimer = setTimeout(function() { self.isScrolling = false; }, 200);
+
+            if (self.phase === 'dancing' && Math.abs(self.scrollY - self.lastStepScroll) > 100) {
+                self.lastStepScroll = self.scrollY;
+                self.advancePose();
+            }
+        }, { passive: true });
+    },
+
+    updatePositions: function() {
+        if (!this.container) return;
 
         var maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-        var scrollProgress = maxScroll > 0 ? Math.min(1, this.scrollY / (maxScroll * 0.4)) : 0;
+        var scrollProgress = maxScroll > 0 ? Math.min(1, this.scrollY / (maxScroll * 0.35)) : 0;
 
-        // Phase 1: Approach — they walk closer
-        if (scrollProgress < 0.8) {
-            this.phase = 'approach';
-            this.targetBoyX = 2 + scrollProgress * 36;
-            this.targetGirlX = 78 - scrollProgress * 32;
-            this.container.classList.remove('dancing');
-
-            // Add walking class when actively scrolling
-            if (this.isScrolling && scrollProgress > 0.05) {
-                this.boyEl.classList.add('walking');
-                this.girlEl.classList.add('walking');
-            } else {
-                this.boyEl.classList.remove('walking');
-                this.girlEl.classList.remove('walking');
+        if (scrollProgress < 0.75) {
+            if (this.phase !== 'approach') {
+                this.phase = 'approach';
+                this.container.classList.add('phase-approach');
+                this.container.classList.remove('dancing');
+                this.clearPose();
             }
+            var progress = Math.min(1, scrollProgress / 0.75);
+            var eased = progress * progress * (3 - 2 * progress);
+            this.targetBoyX = -140 + eased * 140;
+            this.targetGirlX = 140 - eased * 140;
         } else {
-            // Phase 2: Dancing — salsa steps on every scroll
-            this.phase = 'dancing';
-            this.targetBoyX = 35;
-            this.targetGirlX = 48;
-            this.boyEl.classList.remove('walking');
-            this.girlEl.classList.remove('walking');
-            this.container.classList.add('dancing');
+            if (this.phase !== 'dancing') {
+                this.phase = 'dancing';
+                this.container.classList.remove('phase-approach');
+                this.container.classList.add('dancing');
+                this.lastStepScroll = this.scrollY;
+                this.advancePose();
+            }
+            this.targetBoyX = 0;
+            this.targetGirlX = 0;
         }
 
-        // Smooth lerp
-        this.boyX += (this.targetBoyX - this.boyX) * 0.1;
-        this.girlX += (this.targetGirlX - this.girlX) * 0.1;
+        this.boyX += (this.targetBoyX - this.boyX) * 0.08;
+        this.girlX += (this.targetGirlX - this.girlX) * 0.08;
 
-        var distance = this.girlX - this.boyX;
-        this.closeness = Math.max(0, Math.min(1, 1 - (distance - 10) / 60));
+        if (this.boyEl) this.boyEl.style.transform = 'translateX(' + this.boyX + 'px)';
+        if (this.girlEl) this.girlEl.style.transform = 'translateX(' + this.girlX + 'px)';
 
-        this.boyEl.style.position = 'absolute';
-        this.boyEl.style.left = this.boyX + '%';
-        this.boyEl.style.bottom = '10px';
+        var dist = Math.abs(this.girlX - this.boyX);
+        this.closeness = Math.max(0, Math.min(1, 1 - dist / 280));
 
-        this.girlEl.style.position = 'absolute';
-        this.girlEl.style.left = this.girlX + '%';
-        this.girlEl.style.bottom = '10px';
-
-        if (this.heartsEl) {
-            this.heartsEl.style.position = 'absolute';
-            this.heartsEl.style.left = ((this.boyX + this.girlX) / 2 + 5) + '%';
-            this.heartsEl.style.bottom = '150px';
-        }
-
-        if (this.floorEl) {
-            this.floorEl.style.left = ((this.boyX + this.girlX) / 2 + 8) + '%';
-            this.floorEl.style.transform = 'translateX(-50%)';
-        }
-
-        if (this.closeness > 0.5) this.container.classList.add('close-together');
+        if (this.closeness > 0.6) this.container.classList.add('close-together');
         else this.container.classList.remove('close-together');
 
-        this.container.style.opacity = 0.4 + this.closeness * 0.5;
+        this.container.style.opacity = Math.max(0.3, 0.3 + this.closeness * 0.7);
     },
 
-    advanceSalsaStep() {
-        if (this.phase !== 'dancing') return;
-        this.currentStep = (this.currentStep + 1) % this.salsaSteps.length;
-        var step = this.salsaSteps[this.currentStep];
+    advancePose: function() {
+        if (this.phase !== 'dancing' || !this.coupleEl) return;
 
-        // Show step label
+        this.currentPose = (this.currentPose + 1) % this.salsaMoves.length;
+        var move = this.salsaMoves[this.currentPose];
+
+        this.clearPose();
+        void this.coupleEl.offsetWidth;
+        this.coupleEl.classList.add('pose-' + move.pose);
+
         if (this.labelEl) {
-            this.labelEl.textContent = step.name;
+            this.labelEl.textContent = move.name;
             this.labelEl.classList.add('visible');
             var self = this;
             clearTimeout(this.stepLabelTimer);
             this.stepLabelTimer = setTimeout(function() {
                 if (self.labelEl) self.labelEl.classList.remove('visible');
-            }, 2000);
+            }, 2200);
         }
 
-        // Burst of sparkles on new step
-        for (var i = 0; i < 5; i++) {
+        var sparkleCount = move.isLift ? 8 : 3;
+        for (var i = 0; i < sparkleCount; i++) {
             var self = this;
-            setTimeout(function() { self.spawnDanceSparkle(); }, i * 80);
+            (function(delay) {
+                setTimeout(function() { self.spawnSparkle(); }, delay);
+            })(i * (move.isLift ? 100 : 150));
+        }
+
+        var self = this;
+        var poseName = move.pose;
+        setTimeout(function() {
+            if (self.coupleEl) self.coupleEl.classList.remove('pose-' + poseName);
+        }, move.duration);
+    },
+
+    clearPose: function() {
+        if (!this.coupleEl) return;
+        var poses = ['basic', 'cross-body', 'inside-turn', 'dip', 'lift-waist', 'lift-overhead', 'lift-star', 'lift-lean', 'lift-spin'];
+        for (var i = 0; i < poses.length; i++) {
+            this.coupleEl.classList.remove('pose-' + poses[i]);
         }
     },
 
-    bindScroll() {
-        var self = this;
-        var lastStepY = 0;
-        window.addEventListener('scroll', function() {
-            self.scrollY = window.scrollY || window.pageYOffset;
-            self.scrollDelta = Math.abs(self.scrollY - self.lastScrollY);
-            self.lastScrollY = self.scrollY;
-            self.isScrolling = true;
-            self.danceSpeed = Math.min(self.scrollDelta * 0.07, 0.45);
+    spawnSparkle: function() {
+        if (!this.container) return;
+        var sp = document.createElement('div');
+        sp.className = 'dance-sparkle';
+        var col = this.c();
+        var colors = [col.accent, col.gold, col.dress, '#FFD700', '#FF69B4'];
+        var color = colors[Math.floor(Math.random() * colors.length)];
+        var size = Math.random() * 14 + 8;
+        sp.innerHTML = '<svg viewBox="0 0 20 20" width="' + size + '" height="' + size + '"><path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8z" fill="' + color + '"/></svg>';
 
-            // Advance salsa step every ~120px of scroll in dancing phase
-            if (self.phase === 'dancing' && Math.abs(self.scrollY - lastStepY) > 120) {
-                lastStepY = self.scrollY;
-                self.advanceSalsaStep();
-            }
+        var stage = this.container.querySelector('.dance-stage');
+        if (!stage) return;
 
-            clearTimeout(self.scrollTimer);
-            self.scrollTimer = setTimeout(function() { self.isScrolling = false; }, 150);
-        }, { passive: true });
+        sp.style.position = 'absolute';
+        sp.style.left = (40 + Math.random() * 20) + '%';
+        sp.style.bottom = (100 + Math.random() * 200) + 'px';
+        sp.style.setProperty('--tx', (Math.random() - 0.5) * 80 + 'px');
+        sp.style.setProperty('--ty', -(Math.random() * 60 + 30) + 'px');
+        stage.appendChild(sp);
+        setTimeout(function() { sp.remove(); }, 1500);
     },
 
-    startAnimationLoop() {
+    startLoop: function() {
         var self = this;
-        var lastTime = performance.now();
-
-        function loop(now) {
-            var dt = (now - lastTime) / 1000;
-            lastTime = now;
-
-            if (!self.isScrolling) {
-                self.danceSpeed *= 0.92;
-                if (self.danceSpeed < 0.003) self.danceSpeed = 0;
-            }
-
+        function loop() {
             self.updatePositions();
-
-            var minDance = self.closeness * 0.018;
-            var effectiveSpeed = Math.max(self.danceSpeed, minDance);
-
-            if (effectiveSpeed > 0.002) {
-                self.danceAngle += effectiveSpeed;
-                self.render();
-            }
-
-            if (self.closeness > 0.6 && self.danceSpeed > 0.05 && Math.random() < 0.12) {
-                self.spawnDanceSparkle();
-            }
-
             self.animFrameId = requestAnimationFrame(loop);
         }
         self.animFrameId = requestAnimationFrame(loop);
     },
 
-    spawnDanceSparkle() {
-        if (!this.container) return;
-        var sp = document.createElement('div');
-        sp.className = 'dance-sparkle';
-        var col = this.c();
-        var colors = [col.hc, col.sc, col.gd, '#FFD700'];
-        var color = colors[Math.floor(Math.random() * colors.length)];
-        var size = Math.random() * 12 + 8;
-        sp.innerHTML = '<svg viewBox="0 0 20 20" width="' + size + '" height="' + size + '"><path d="M10 0L12 8L20 10L12 12L10 20L8 12L0 10L8 8z" fill="' + color + '" opacity="0.8"><animateTransform attributeName="transform" type="rotate" values="0 10 10;360 10 10" dur="1s" repeatCount="1"/></path></svg>';
-        var cx = (this.boyX + this.girlX) / 2;
-        sp.style.position = 'absolute';
-        sp.style.left = (cx + Math.random() * 20 - 10) + '%';
-        sp.style.bottom = (80 + Math.random() * 160) + 'px';
-        sp.style.setProperty('--tx', (Math.random() - 0.5) * 60 + 'px');
-        sp.style.setProperty('--ty', -(Math.random() * 50 + 20) + 'px');
-        this.container.appendChild(sp);
-        setTimeout(function() { sp.remove(); }, 1800);
+    updateTheme: function() {
+        this.renderBoy();
+        this.renderGirl();
     },
 
-    updateTheme() { this.render(); },
-
-    destroy() {
+    destroy: function() {
         if (this.animFrameId) cancelAnimationFrame(this.animFrameId);
         if (this.container && this.container.parentNode) this.container.parentNode.removeChild(this.container);
         this.initialized = false;

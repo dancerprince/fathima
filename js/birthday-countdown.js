@@ -76,8 +76,16 @@
             
             const progressContainer = document.getElementById('countdown-progress');
             if (progressContainer) progressContainer.style.display = 'none';
+
+            // Show "Today is Special" badge ONLY on birthday
+            const heroBadge = document.getElementById('hero-badge');
+            if (heroBadge) { heroBadge.style.display = 'inline-block'; }
             return;
         }
+
+        // Not birthday — keep "Today is Special" hidden
+        const heroBadge = document.getElementById('hero-badge');
+        if (heroBadge) { heroBadge.style.display = 'none'; }
 
         const t = getTimeRemaining();
         
