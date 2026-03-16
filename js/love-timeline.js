@@ -302,6 +302,10 @@ const LoveTimeline = (function() {
     let isAnimating = false;
     let introContainer = null;
     let skipCallback = null;
+    let navResolve = null;       // resolve fn for current memory/calendar promise
+    let navDirection = null;     // 'prev' | 'next' | null
+    let memoryTimeouts = [];     // track timeouts so we can cancel them
+    let isPaused = false;
 
     // ===== Parse date for calendar =====
     function parseMemoryDate(dateStr) {
@@ -385,6 +389,22 @@ const LoveTimeline = (function() {
 
             <!-- Counter -->
             <div class="memory-counter" id="tl-counter"></div>
+
+            <!-- Navigation buttons (prev / next) -->
+            <div class="tl-nav-controls" id="tl-nav-controls">
+                <button class="tl-nav-btn tl-nav-prev" id="tl-nav-prev" title="Previous Memory">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="15,4 7,12 15,20"/>
+                    </svg>
+                    <span class="tl-nav-label">Prev</span>
+                </button>
+                <button class="tl-nav-btn tl-nav-next" id="tl-nav-next" title="Next Memory">
+                    <span class="tl-nav-label">Next</span>
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="9,4 17,12 9,20"/>
+                    </svg>
+                </button>
+            </div>
         `;
 
         document.body.insertBefore(intro, document.body.firstChild);
@@ -455,9 +475,31 @@ const LoveTimeline = (function() {
         });
     }
 
+    // ===== Clear pending timeouts =====
+    function clearMemoryTimeouts() {
+        memoryTimeouts.forEach(t => clearTimeout(t));
+        memoryTimeouts = [];
+    }
+
+    // ===== Update nav button states =====
+    function updateNavButtons() {
+        const prevBtn = document.getElementById('tl-nav-prev');
+        const nextBtn = document.getElementById('tl-nav-next');
+        if (prevBtn) {
+            prevBtn.classList.toggle('disabled', currentIndex <= 0);
+            prevBtn.disabled = (currentIndex <= 0);
+        }
+        if (nextBtn) {
+            nextBtn.classList.toggle('disabled', currentIndex >= memories.length - 1);
+            nextBtn.disabled = (currentIndex >= memories.length - 1);
+        }
+    }
+
     // ===== Show Calendar Transition =====
     function showCalendarTransition(memoryIndex) {
         return new Promise(resolve => {
+            navResolve = resolve;
+            navDirection = null;
             const cal = document.getElementById('tl-calendar');
             if (!cal) { resolve(); return; }
 
@@ -490,25 +532,32 @@ const LoveTimeline = (function() {
             cal.classList.add('active');
             cal.classList.remove('exit');
 
-            setTimeout(() => {
+            clearMemoryTimeouts();
+            const t1 = setTimeout(() => {
                 cal.classList.add('exit');
-                setTimeout(() => {
+                const t2 = setTimeout(() => {
                     cal.classList.remove('active', 'exit');
+                    navResolve = null;
                     resolve();
                 }, 600);
+                memoryTimeouts.push(t2);
             }, 1400);
+            memoryTimeouts.push(t1);
         });
     }
 
     // ===== Show Memory =====
     function showMemory(index) {
         return new Promise(resolve => {
+            navResolve = resolve;
+            navDirection = null;
             const memEl = document.getElementById('tl-memory');
             if (!memEl) { resolve(); return; }
 
             const memory = memories[index];
             currentIndex = index;
             updateProgress();
+            updateNavButtons();
 
             // Populate
             document.getElementById('tl-mem-date').textContent = memory.date;
@@ -524,14 +573,18 @@ const LoveTimeline = (function() {
             // Time to read — varies by content length
             const readTime = Math.max(3500, Math.min(5500, memory.event.length * 25 + memory.quote.length * 20));
 
-            setTimeout(() => {
+            clearMemoryTimeouts();
+            const t1 = setTimeout(() => {
                 memEl.classList.add('exit');
                 memEl.classList.remove('active');
-                setTimeout(() => {
+                const t2 = setTimeout(() => {
                     memEl.classList.remove('exit');
+                    navResolve = null;
                     resolve();
                 }, 900);
+                memoryTimeouts.push(t2);
             }, readTime);
+            memoryTimeouts.push(t1);
         });
     }
 
@@ -552,6 +605,42 @@ const LoveTimeline = (function() {
         });
     }
 
+    // ===== Instantly clear all visible timeline screens =====
+    function clearAllScreens() {
+        clearMemoryTimeouts();
+        const memEl = document.getElementById('tl-memory');
+        const cal = document.getElementById('tl-calendar');
+        if (memEl) { memEl.classList.remove('active', 'exit'); }
+        if (cal) { cal.classList.remove('active', 'exit'); }
+    }
+
+    // ===== Navigate to a specific memory index =====
+    function navigateTo(direction) {
+        if (!isAnimating) return;
+
+        let targetIndex;
+        if (direction === 'prev') {
+            targetIndex = Math.max(0, currentIndex - 1);
+            if (targetIndex === currentIndex) return; // already at first
+        } else {
+            targetIndex = Math.min(memories.length - 1, currentIndex + 1);
+            if (targetIndex === currentIndex) return; // already at last
+        }
+
+        // Set nav direction so the loop knows what to do
+        navDirection = direction;
+
+        // Cancel any pending animations
+        clearAllScreens();
+
+        // Resolve the current promise if it exists
+        if (navResolve) {
+            const fn = navResolve;
+            navResolve = null;
+            fn();
+        }
+    }
+
     // ===== Run the full timeline sequence =====
     async function runTimeline(onComplete) {
         skipCallback = onComplete;
@@ -560,18 +649,63 @@ const LoveTimeline = (function() {
         // Show welcome first
         await showWelcome();
 
-        // Loop through all memories
-        for (let i = 0; i < memories.length; i++) {
+        // Show nav controls after welcome
+        const navControls = document.getElementById('tl-nav-controls');
+        if (navControls) navControls.classList.add('active');
+
+        // Loop through all memories with navigation support
+        let i = 0;
+        while (i < memories.length) {
             if (!isAnimating) return; // Skipped
+
+            navDirection = null;
 
             // Show calendar transition
             await showCalendarTransition(i);
             if (!isAnimating) return;
 
+            // Check if user navigated during calendar
+            if (navDirection === 'prev') {
+                i = Math.max(0, currentIndex - 1);
+                currentIndex = i;
+                updateProgress();
+                updateNavButtons();
+                continue;
+            }
+            if (navDirection === 'next') {
+                i = Math.min(memories.length - 1, currentIndex + 1);
+                currentIndex = i;
+                updateProgress();
+                updateNavButtons();
+                continue;
+            }
+
             // Show the memory
             await showMemory(i);
             if (!isAnimating) return;
+
+            // Check if user navigated during memory display
+            if (navDirection === 'prev') {
+                i = Math.max(0, currentIndex - 1);
+                currentIndex = i;
+                updateProgress();
+                updateNavButtons();
+                continue;
+            }
+            if (navDirection === 'next') {
+                i = Math.min(memories.length - 1, currentIndex + 1);
+                currentIndex = i;
+                updateProgress();
+                updateNavButtons();
+                continue;
+            }
+
+            // Normal flow: advance to next
+            i++;
         }
+
+        // Hide nav controls before bridge
+        if (navControls) navControls.classList.remove('active');
 
         // Show bridge
         if (isAnimating) {
@@ -624,6 +758,34 @@ const LoveTimeline = (function() {
         if (skipBtn) {
             skipBtn.addEventListener('click', skip);
         }
+
+        // Navigation buttons
+        const prevBtn = document.getElementById('tl-nav-prev');
+        const nextBtn = document.getElementById('tl-nav-next');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navigateTo('prev');
+            });
+        }
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                navigateTo('next');
+            });
+        }
+
+        // Keyboard shortcuts for navigation
+        document.addEventListener('keydown', function(e) {
+            if (!isAnimating || !introContainer) return;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                navigateTo('prev');
+            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                navigateTo('next');
+            }
+        });
 
         // Start the timeline
         setTimeout(() => {
