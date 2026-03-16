@@ -66,6 +66,8 @@ body {
     color: var(--text-dark);
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
 }
 
 /* Aurora glow overlay */
@@ -225,7 +227,8 @@ body::after {
     }
     .nav-links.open { display:flex; }
     .nav-toggle { display:block; }
-    .main-nav { padding:12px 20px; }
+    .main-nav { padding:12px 20px; padding-top: calc(12px + env(safe-area-inset-top, 0px)); }
+    .main-footer { padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* ====== HERO ====== */

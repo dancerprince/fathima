@@ -94,6 +94,31 @@ const AudioController = (function() {
             // Start the music!
             startPlaying();
 
+            // MOBILE VIDEO FIX: This tap is the first user gesture on the page.
+            // iOS Safari requires video.play() to be called during a user gesture.
+            // Pre-create and play the video element now so it's "unlocked" for later.
+            // CoupleDoll.init() will reuse this element when it runs.
+            try {
+                var earlyVideo = document.createElement('video');
+                earlyVideo.id = 'couple-dance-video-preload';
+                earlyVideo.src = 'assets/couple-dance.mp4';
+                earlyVideo.muted = true;
+                earlyVideo.setAttribute('muted', '');
+                earlyVideo.setAttribute('playsinline', '');
+                earlyVideo.setAttribute('webkit-playsinline', '');
+                earlyVideo.setAttribute('loop', '');
+                earlyVideo.setAttribute('preload', 'auto');
+                earlyVideo.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;z-index:-1';
+                document.body.appendChild(earlyVideo);
+                earlyVideo.play().then(function() {
+                    // Video unlocked! Store reference for CoupleDoll to pick up
+                    window.__mobileVideoUnlocked = earlyVideo;
+                }).catch(function() {
+                    // Cleanup if failed
+                    if (earlyVideo.parentNode) earlyVideo.parentNode.removeChild(earlyVideo);
+                });
+            } catch(e) {}
+
             // Trigger the callback (starts the timeline)
             if (onFirstPlayCallback) {
                 onFirstPlayCallback();

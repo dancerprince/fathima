@@ -74,9 +74,24 @@ function showMainScreen() {
     initHeroParticles();
     initScrollReveal();
 
-    // Initialize couple doll
+    // Initialize couple doll video background
     if (typeof CoupleDoll !== 'undefined') {
-        setTimeout(function() { CoupleDoll.init(); }, 500);
+        setTimeout(function() {
+            CoupleDoll.init();
+            // On mobile, also try to trigger video.play() now since we already
+            // had a user gesture (the "Tap to Begin" overlay tap).
+            // This is the most reliable way to start video on iOS Safari.
+            if (CoupleDoll.video && CoupleDoll.isMobile()) {
+                CoupleDoll.video.muted = true;
+                var p = CoupleDoll.video.play();
+                if (p && p.then) {
+                    p.then(function() {
+                        CoupleDoll.mobileVideoPlaying = true;
+                        CoupleDoll.videoReady = true;
+                    }).catch(function() {});
+                }
+            }
+        }, 500);
     }
 
     // Insert the Love Roadmap section into the main page

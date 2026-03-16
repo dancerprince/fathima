@@ -259,3 +259,76 @@
     font-family: 'Playfair Display', serif; font-size: 1.15rem;
     color: #CE93D8; font-style: italic;
 }
+
+/* ========================================
+   MOBILE RESPONSIVE - Games
+   ======================================== */
+@media (max-width: 768px) {
+    .games-section { padding: 60px 15px; }
+    .games-grid {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 15px; padding: 0 10px;
+    }
+    .game-card-front { padding: 30px 20px; }
+    .game-icon { font-size: 2.8rem; }
+    .game-card-front h3 { font-size: 1.15rem; }
+    .modal-content {
+        padding: 30px 20px; max-width: 95vw;
+        max-height: 85vh; border-radius: 16px;
+    }
+    .modal-content h2 { font-size: 1.6rem; }
+    .modal-wide { max-width: 95vw; }
+    .game-modal { padding: 10px; }
+    .memory-board { gap: 8px; max-width: 300px; }
+    .card-back { font-size: 1.6rem; }
+    .card-front { font-size: 1.2rem; }
+    .memory-stats { gap: 15px; font-size: 0.85rem; }
+    .catch-area { height: 300px; }
+    .falling-heart { font-size: 1.6rem; }
+    .catch-stats { gap: 15px; font-size: 0.85rem; }
+    #wheel-canvas { width: 260px; height: 260px; }
+    .jar-body { width: 120px; height: 150px; }
+    .jar-lid { width: 100px; }
+    .quiz-question { font-size: 1rem; }
+    .quiz-option { padding: 12px 16px; font-size: 0.9rem; }
+}
+
+@media (max-width: 480px) {
+    .games-section { padding: 50px 10px; }
+    .games-grid { grid-template-columns: 1fr; gap: 12px; }
+    .game-card-front { padding: 25px 18px; }
+    .game-icon { font-size: 2.4rem; margin-bottom: 10px; }
+    .game-card-front h3 { font-size: 1.05rem; }
+    .game-card-front p { font-size: 0.82rem; }
+    .modal-content {
+        padding: 25px 15px; max-height: 80vh; border-radius: 14px;
+    }
+    .modal-content h2 { font-size: 1.4rem; margin-bottom: 15px; }
+    .modal-close { top: 10px; right: 10px; width: 32px; height: 32px; }
+    .memory-board {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px; max-width: 260px;
+    }
+    .card-back { font-size: 1.3rem; }
+    .memory-stats { flex-wrap: wrap; gap: 10px; font-size: 0.8rem; }
+    .catch-area { height: 250px; }
+    .falling-heart { font-size: 1.4rem; }
+    #wheel-canvas { width: 220px; height: 220px; }
+    #spin-btn { font-size: 0.95rem; padding: 12px 30px; }
+    .jigsaw-word { padding: 6px 12px; font-size: 0.85rem; }
+    .jigsaw-target { min-height: 50px; padding: 10px; }
+    .jar-body { width: 100px; height: 130px; }
+    .jar-lid { width: 85px; height: 20px; }
+    .wish-paper { padding: 18px 15px; }
+    .wish-paper p { font-size: 0.95rem; }
+}
+
+/* Touch-friendly tap targets (min 44px) */
+@media (pointer: coarse) {
+    .memory-card { min-height: 50px; min-width: 50px; }
+    .quiz-option { min-height: 48px; }
+    .falling-heart { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+    .modal-close { width: 40px; height: 40px; }
+    .jigsaw-word { min-height: 40px; display: flex; align-items: center; }
+    .btn-game { min-height: 48px; }
+}

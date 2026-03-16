@@ -1,8 +1,10 @@
 /* ============================================
-   ANIME COUPLE DANCE — Fullscreen Background
+   ANIME COUPLE DANCE - Fullscreen Background
    Salsa dance video plays fullscreen at 45%
    opacity behind all page content.
-   Scrubs on scroll for interactivity.
+   MOBILE: Loops video continuously (scroll-scrub
+   does NOT work on iOS/Android).
+   DESKTOP: Scrubs on scroll for interactivity.
    ============================================ */
 var CoupleDoll = {
     container: null,
@@ -18,11 +20,12 @@ var CoupleDoll = {
     phase: 'idle',
     videoDuration: 5.08,
     videoReady: false,
+    mobileVideoPlaying: false,
     lastStepScroll: 0,
     currentStep: -1,
     stepLabelTimer: null,
 
-    /* Video path — new salsa video */
+    /* Video path */
     VIDEO_SRC: 'assets/couple-dance.mp4',
 
     /* Dance step labels shown as user scrolls */
@@ -50,65 +53,166 @@ var CoupleDoll = {
         this.bindScroll();
         this.startLoop();
         this.initialized = true;
+
+        /* On mobile, we need a user gesture to start video playback.
+           iOS/Android block video.play() unless triggered by touch/click. */
+        if (this.isMobile()) {
+            this.bindMobileAutoplay();
+        }
+    },
+
+    isMobile: function() {
+        return window.innerWidth <= 768 || ('ontouchstart' in window);
+    },
+
+    /* =============================================
+       MOBILE VIDEO FIX
+       iOS Safari & Android Chrome block:
+       1) autoplay without user gesture
+       2) video.currentTime scrubbing without play()
+       
+       Solution: On first user touch/click, call
+       video.play() with muted+loop. Video then
+       plays continuously as background.
+       ============================================= */
+    bindMobileAutoplay: function() {
+        var self = this;
+        var started = false;
+
+        function startMobileVideo() {
+            if (started || !self.video) return;
+
+            /* Ensure muted (mandatory for mobile autoplay) */
+            self.video.muted = true;
+
+            var playPromise = self.video.play();
+            if (playPromise !== undefined) {
+                playPromise.then(function() {
+                    started = true;
+                    self.mobileVideoPlaying = true;
+                    self.videoReady = true;
+                    self.videoDuration = self.video.duration || 5.08;
+                    removeMobileListeners();
+                }).catch(function(err) {
+                    /* Still blocked - will retry on next gesture */
+                    console.log('Video play deferred, waiting for gesture:', err.message);
+                });
+            } else {
+                started = true;
+                self.mobileVideoPlaying = true;
+                self.videoReady = true;
+                removeMobileListeners();
+            }
+        }
+
+        function removeMobileListeners() {
+            document.removeEventListener('touchstart', startMobileVideo, true);
+            document.removeEventListener('touchend', startMobileVideo, true);
+            document.removeEventListener('click', startMobileVideo, true);
+            document.removeEventListener('scroll', startMobileVideo, true);
+        }
+
+        /* Try immediate autoplay (works on Chrome Android when muted) */
+        setTimeout(function() { startMobileVideo(); }, 200);
+
+        /* Fallback: listen for ANY user gesture */
+        document.addEventListener('touchstart', startMobileVideo, { capture: true, passive: true });
+        document.addEventListener('touchend', startMobileVideo, { capture: true, passive: true });
+        document.addEventListener('click', startMobileVideo, { capture: true, passive: true });
+        document.addEventListener('scroll', startMobileVideo, { capture: true, passive: true });
     },
 
     createDOM: function() {
         var self = this;
+        var mobile = this.isMobile();
 
         this.container = document.createElement('div');
         this.container.id = 'couple-doll-layer';
 
+        /* Mobile: add loop for continuous playback (no scroll-scrub).
+           Both: preload="auto" so video data is buffered. */
+        var loopAttr = mobile ? ' loop' : '';
+
         var html =
-            /* Fullscreen video */
             '<div class="couple-video-container">' +
                 '<video class="couple-dance-video" id="couple-dance-video" ' +
-                    'muted playsinline preload="auto" ' +
-                    'src="' + this.VIDEO_SRC + '"></video>' +
+                    'muted playsinline webkit-playsinline' + loopAttr + ' preload="auto" ' +
+                    'src="' + this.VIDEO_SRC + '" type="video/mp4"></video>' +
             '</div>' +
-
-            /* Dark overlay for text readability */
             '<div class="video-dark-overlay"></div>' +
-
-            /* Floating hearts */
             '<div class="dance-hearts" id="dance-hearts">' +
                 '<span class="dance-heart">\uD83D\uDC96</span>' +
                 '<span class="dance-heart">\uD83D\uDC95</span>' +
                 '<span class="dance-heart">\uD83D\uDC97</span>' +
-                '<span class="dance-heart">\u2764\uFE0F</span>' +
-                '<span class="dance-heart">\uD83D\uDC9E</span>' +
+                (mobile ? '' : '<span class="dance-heart">\u2764\uFE0F</span><span class="dance-heart">\uD83D\uDC9E</span>') +
             '</div>' +
-
-            /* Step label */
             '<div class="dance-step-label" id="dance-step-label"></div>' +
-
-            /* Progress bar */
             '<div class="dance-progress">' +
                 '<div class="dance-progress-fill" id="dance-progress-fill"></div>' +
             '</div>';
 
         this.container.innerHTML = html;
 
-        /* Insert as FIRST child of main-screen so it's behind everything */
         var mainScreen = document.getElementById('main-screen');
         if (mainScreen) {
             mainScreen.insertBefore(this.container, mainScreen.firstChild);
         } else {
             document.body.appendChild(this.container);
-        }
-
-        this.video = document.getElementById('couple-dance-video');
+this.video = document.getElementById('couple-dance-video');
         this.labelEl = document.getElementById('dance-step-label');
         this.progressFill = document.getElementById('dance-progress-fill');
 
-        /* Setup video */
+        /* MOBILE FIX: If AudioController already unlocked a video element
+           during the user's first tap, swap it into our container.
+           This reuses the already-playing, gesture-unlocked video. */
+        if (mobile && window.__mobileVideoUnlocked) {
+            var unlockedVideo = window.__mobileVideoUnlocked;
+            var oldVideo = this.video;
+            if (oldVideo && oldVideo.parentNode) {
+                /* Copy attributes and replace */
+                unlockedVideo.id = 'couple-dance-video';
+                unlockedVideo.className = 'couple-dance-video';
+                unlockedVideo.style.cssText = ''; /* Clear the hidden style */
+                oldVideo.parentNode.replaceChild(unlockedVideo, oldVideo);
+                this.video = unlockedVideo;
+                this.mobileVideoPlaying = true;
+                this.videoReady = true;
+                this.videoDuration = unlockedVideo.duration || 5.08;
+            }
+            delete window.__mobileVideoUnlocked;
+        }
+
         if (this.video) {
-            this.video.pause();
-            this.video.currentTime = 0;
+
+            this.video.muted = true;            /* Force muted via JS property AND attribute (iOS needs both) */
+            this.video.muted = true;
+            this.video.setAttribute('muted', '');
+            this.video.setAttribute('playsinline', '');
+            this.video.setAttribute('webkit-playsinline', '');
+            if (mobile) {
+                this.video.setAttribute('loop', '');
+            }
 
             this.video.addEventListener('loadedmetadata', function() {
                 self.videoDuration = self.video.duration || 5.08;
                 self.videoReady = true;
             });
+
+            this.video.addEventListener('canplay', function() {
+                self.videoReady = true;
+                /* Desktop only: keep paused for scroll-scrub control */
+                if (!mobile) {
+                    self.video.pause();
+                    self.video.currentTime = 0;
+                }
+            });
+
+            this.video.addEventListener('error', function(e) {
+                console.warn('Video error:', e);
+            });
+
+            /* Force start loading */
+            this.video.load();
         }
 
         /* Show layer with fade-in */
@@ -123,12 +227,19 @@ var CoupleDoll = {
         window.addEventListener('scroll', function() {
             self.scrollY = window.scrollY || window.pageYOffset;
             self.isScrolling = true;
-
             clearTimeout(self.scrollTimer);
             self.scrollTimer = setTimeout(function() {
                 self.isScrolling = false;
             }, 250);
         }, { passive: true });
+
+        /* Mobile: also detect touchmove as scroll fallback */
+        if (this.isMobile()) {
+            window.addEventListener('touchmove', function() {
+                self.scrollY = window.scrollY || window.pageYOffset;
+                self.isScrolling = true;
+            }, { passive: true });
+        }
     },
 
     updatePositions: function() {
@@ -138,6 +249,7 @@ var CoupleDoll = {
         if (maxScroll <= 0) return;
 
         var scrollFraction = Math.min(1, this.scrollY / maxScroll);
+        var mobile = this.isMobile();
 
         /* Activate dancing state after small scroll */
         if (scrollFraction > 0.02) {
@@ -153,15 +265,22 @@ var CoupleDoll = {
             }
         }
 
-        /* Scrub video to match scroll position */
-        if (this.videoReady && this.video.readyState >= 2) {
-            /* Loop the video multiple times across the full scroll */
-            var loops = 4;
-            var loopedFraction = (scrollFraction * loops) % 1;
-            var targetTime = loopedFraction * this.videoDuration;
-
-            if (Math.abs(this.video.currentTime - targetTime) > 0.03) {
-                this.video.currentTime = targetTime;
+        /* === VIDEO PLAYBACK STRATEGY ===
+           MOBILE:  Video loops via loop attribute. play() called on user gesture.
+                    If paused for any reason, try to resume.
+           DESKTOP: Scrub video.currentTime to match scroll position. */
+        if (mobile) {
+            if (this.mobileVideoPlaying && this.video.paused && scrollFraction > 0.01) {
+                try { this.video.play(); } catch(e) {}
+            }
+        } else {
+            if (this.videoReady && this.video.readyState >= 2) {
+                var loops = 4;
+                var loopedFraction = (scrollFraction * loops) % 1;
+                var targetTime = loopedFraction * this.videoDuration;
+                if (Math.abs(this.video.currentTime - targetTime) > 0.03) {
+                    this.video.currentTime = targetTime;
+                }
             }
         }
 
@@ -192,8 +311,9 @@ var CoupleDoll = {
             }, 2500);
         }
 
-        /* Spawn sparkles */
-        var sparkleCount = stepName.indexOf('Lift') !== -1 ? 10 : 5;
+        /* Spawn sparkles (fewer on mobile) */
+        var mobile = this.isMobile();
+        var sparkleCount = stepName.indexOf('Lift') !== -1 ? (mobile ? 3 : 10) : (mobile ? 1 : 5);
         for (var i = 0; i < sparkleCount; i++) {
             var self = this;
             (function(delay) {
@@ -234,7 +354,7 @@ var CoupleDoll = {
     },
 
     updateTheme: function() {
-        /* Video looks great on any theme — no changes needed */
+        /* Video looks great on any theme */
     },
 
     destroy: function() {
