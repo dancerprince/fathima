@@ -15,7 +15,6 @@
     <link rel="stylesheet" href="css/gallery.css">
     <link rel="stylesheet" href="css/giftbox.css">
     <link rel="stylesheet" href="css/couple-doll.css">
-    <!-- favicon set dynamically by theme -->
 </head>
 <body>
     <!-- ==================== LOADING SCREEN ==================== -->
@@ -149,7 +148,7 @@
             <div class="quote-dots" id="quote-dots"></div>
         </section>
 
-        <!-- ===== TIMELINE / OUR STORY SECTION ===== -->
+        <!-- ===== TIMELINE / OUR STORY ===== -->
         <section id="timeline" class="timeline-section">
             <div class="section-header">
                 <span class="section-badge"></span>
@@ -157,40 +156,16 @@
                 <p class="section-subtitle">All the reasons why you make every day magical</p>
             </div>
             <div class="celebration-cards">
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Smile</h3>
-                    <p>The way your smile lights up the entire room — it's my favorite sunrise, every single day.</p>
-                </div>
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Kindness</h3>
-                    <p>You carry so much love in your heart. The world is gentler because you exist in it.</p>
-                </div>
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Strength</h3>
-                    <p>Even on the hardest days, you stand tall with grace. You inspire me more than you'll ever know.</p>
-                </div>
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Laughter</h3>
-                    <p>That beautiful laugh of yours — it's the melody my heart knows by heart.</p>
-                </div>
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Love</h3>
-                    <p>Being loved by you is the greatest blessing of my life. I am who I am because of you.</p>
-                </div>
-                <div class="celeb-card" data-aos="fade-up">
-                    <div class="celeb-icon"></div>
-                    <h3>Your Soul</h3>
-                    <p>Pure, beautiful, and endlessly warm — your soul is a masterpiece that God crafted with extra love.</p>
-                </div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Smile</h3><p>The way your smile lights up the entire room — it's my favorite sunrise, every single day.</p></div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Kindness</h3><p>You carry so much love in your heart. The world is gentler because you exist in it.</p></div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Strength</h3><p>Even on the hardest days, you stand tall with grace. You inspire me more than you'll ever know.</p></div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Laughter</h3><p>That beautiful laugh of yours — it's the melody my heart knows by heart.</p></div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Love</h3><p>Being loved by you is the greatest blessing of my life. I am who I am because of you.</p></div>
+                <div class="celeb-card"><div class="celeb-icon"></div><h3>Your Soul</h3><p>Pure, beautiful, and endlessly warm — your soul is a masterpiece crafted with extra love.</p></div>
             </div>
         </section>
 
-        <!-- ===== MINI GAMES SECTION ===== -->
+        <!-- ===== MINI GAMES ===== -->
         <section id="games" class="games-section">
             <div class="section-header">
                 <span class="section-badge"></span>
@@ -198,71 +173,21 @@
                 <p class="section-subtitle">A little fun made with love, just for you!</p>
             </div>
             <div class="games-grid">
-                <!-- Game 1: Memory Match -->
-                <div class="game-card" id="game-memory">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Memory Match</h3>
-                        <p>Match the love-themed pairs!</p>
-                        <button class="btn btn-game" onclick="startMemoryGame()">Play Now</button>
-                    </div>
-                </div>
-                <!-- Game 2: Love Quiz -->
-                <div class="game-card" id="game-quiz">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Love Quiz</h3>
-                        <p>How well do we know each other?</p>
-                        <button class="btn btn-game" onclick="startLoveQuiz()">Play Now</button>
-                    </div>
-                </div>
-                <!-- Game 3: Catch Hearts -->
-                <div class="game-card" id="game-catch">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Catch the Hearts</h3>
-                        <p>Catch falling hearts before they disappear!</p>
-                        <button class="btn btn-game" onclick="startCatchHearts()">Play Now</button>
-                    </div>
-                </div>
-                <!-- Game 4: Puzzle -->
-                <div class="game-card" id="game-puzzle">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Love Jigsaw</h3>
-                        <p>Piece together a love message!</p>
-                        <button class="btn btn-game" onclick="startJigsaw()">Play Now</button>
-                    </div>
-                </div>
-                <!-- Game 5: Wish Jar -->
-                <div class="game-card" id="game-jar">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Wish Jar</h3>
-                        <p>Pick a surprise wish from the jar!</p>
-                        <button class="btn btn-game" onclick="startWishJar()">Play Now</button>
-                    </div>
-                </div>
-                <!-- Game 6: Spin the Wheel -->
-                <div class="game-card" id="game-wheel">
-                    <div class="game-card-front">
-                        <div class="game-icon"></div>
-                        <h3>Love Wheel</h3>
-                        <p>Spin and get a love surprise!</p>
-                        <button class="btn btn-game" onclick="startLoveWheel()">Play Now</button>
-                    </div>
-                </div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Memory Match</h3><p>Match the love-themed pairs!</p><button class="btn btn-game" onclick="startMemoryGame()">Play Now</button></div></div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Love Quiz</h3><p>How well do we know each other?</p><button class="btn btn-game" onclick="startLoveQuiz()">Play Now</button></div></div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Catch the Hearts</h3><p>Catch falling hearts before they disappear!</p><button class="btn btn-game" onclick="startCatchHearts()">Play Now</button></div></div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Love Jigsaw</h3><p>Piece together a love message!</p><button class="btn btn-game" onclick="startJigsaw()">Play Now</button></div></div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Wish Jar</h3><p>Pick a surprise wish from the jar!</p><button class="btn btn-game" onclick="startWishJar()">Play Now</button></div></div>
+                <div class="game-card"><div class="game-card-front"><div class="game-icon"></div><h3>Love Wheel</h3><p>Spin and get a love surprise!</p><button class="btn btn-game" onclick="startLoveWheel()">Play Now</button></div></div>
             </div>
         </section>
 
-        <!-- ===== LOVE LETTER SECTION ===== -->
+        <!-- ===== LOVE LETTER ===== -->
         <section id="letter" class="letter-section">
             <div class="letter-container">
                 <div class="envelope" id="envelope" onclick="openEnvelope()">
                     <div class="envelope-top"></div>
-                    <div class="envelope-body">
-                        <p class="envelope-text">Click to Open</p>
-                    </div>
+                    <div class="envelope-body"><p class="envelope-text">Click to Open</p></div>
                 </div>
                 <div class="letter-content hidden" id="letter-content">
                     <div class="letter-paper">
@@ -295,16 +220,11 @@
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('memory-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
             <h2>Memory Match</h2>
-            <div class="memory-stats">
-                <span>Moves: <strong id="memory-moves">0</strong></span>
-                <span>Pairs: <strong id="memory-pairs">0</strong>/8</span>
-                <span>Time: <strong id="memory-time">0:00</strong></span>
-            </div>
+            <div class="memory-stats"><span>Moves: <strong id="memory-moves">0</strong></span><span>Pairs: <strong id="memory-pairs">0</strong>/8</span><span>Time: <strong id="memory-time">0:00</strong></span></div>
             <div class="memory-board" id="memory-board"></div>
             <button class="btn btn-game" onclick="resetMemoryGame()" style="margin-top:15px;">Reset</button>
         </div>
     </div>
-
     <div class="game-modal hidden" id="quiz-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('quiz-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
@@ -312,20 +232,14 @@
             <div class="quiz-container" id="quiz-container"></div>
         </div>
     </div>
-
     <div class="game-modal hidden" id="catch-modal">
         <div class="modal-content modal-wide">
-            <button class="modal-close" onclick="closeModal('catch-modal');stopCatchGame()"><svg viewBox='0 0 24 24' width='16' height='16'><line x1='4' y1='4' x2='20' y2='20' stroke='currentColor' stroke-width='3' stroke-linecap='round'/><line x1='20' y1='4' x2='4' y2='20' stroke='currentColor' stroke-width='3' stroke-linecap='round'/></svg></button>
+            <button class="modal-close" onclick="closeModal('catch-modal');stopCatchGame()"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
             <h2>Catch the Hearts!</h2>
-            <div class="catch-stats">
-                <span>Score: <strong id="catch-score">0</strong></span>
-                <span>Time: <strong id="catch-time">30</strong>s</span>
-                <span>Lives: <strong id="catch-lives"></strong></span>
-            </div>
+            <div class="catch-stats"><span>Score: <strong id="catch-score">0</strong></span><span>Time: <strong id="catch-time">30</strong>s</span><span>Lives: <strong id="catch-lives"></strong></span></div>
             <div class="catch-area" id="catch-area"></div>
         </div>
     </div>
-
     <div class="game-modal hidden" id="jigsaw-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('jigsaw-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
@@ -338,29 +252,23 @@
             <div class="jigsaw-result" id="jigsaw-result"></div>
         </div>
     </div>
-
     <div class="game-modal hidden" id="jar-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('jar-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
             <h2>Wish Jar</h2>
             <div class="jar-container" id="jar-container">
                 <div class="wish-jar" onclick="pickWish()">
-                    <div class="jar-body">
-                        <div class="jar-papers" id="jar-papers"></div>
-                    </div>
+                    <div class="jar-body"><div class="jar-papers" id="jar-papers"></div></div>
                     <div class="jar-lid"></div>
                     <p class="jar-tap">Tap the jar!</p>
                 </div>
             </div>
             <div class="wish-display hidden" id="wish-display">
-                <div class="wish-paper">
-                    <p id="wish-text"></p>
-                </div>
+                <div class="wish-paper"><p id="wish-text"></p></div>
                 <button class="btn btn-game" onclick="pickWish()" style="margin-top:15px;">Pick Another</button>
             </div>
         </div>
     </div>
-
     <div class="game-modal hidden" id="wheel-modal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeModal('wheel-modal')"><svg viewBox="0 0 24 24" width="16" height="16"><line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="4" x2="4" y2="20" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg></button>
@@ -377,11 +285,11 @@
     <!-- Confetti Canvas -->
     <canvas id="confetti-canvas"></canvas>
 
-    <!-- Theme Transition Overlay -->
+    <!-- Theme overlays (hidden/disabled) -->
     <div class="theme-flash-overlay" id="theme-flash-overlay"></div>
     <div class="theme-label-toast" id="theme-label-toast"></div>
 
-    <!-- Audio -->
+    <!-- Music Toggle -->
     <button class="music-toggle" id="music-toggle" onclick="toggleMusic()"></button>
 
     <!-- Scripts -->

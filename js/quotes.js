@@ -1,7 +1,6 @@
 // ========================================
 // 100 LOVE QUOTES FOR FATHIMA
 // ========================================
-
 const loveQuotes = [
     "Your smile is the first thing I want to see every morning and the last thing I want to see every night.",
     "In a world full of people, my eyes will always search for you.",
@@ -105,7 +104,6 @@ const loveQuotes = [
     "You are the love of my life, Fathima. Happy Birthday, my everything."
 ];
 
-// Loading screen quotes
 const loadingQuotes = [
     "Every love story is beautiful, but ours is my favorite...",
     "You are the reason I believe in love...",

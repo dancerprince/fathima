@@ -1,74 +1,118 @@
 /* ========================================
-   COUPLE DOLL — Background Layer
-   Cute dancing couple that moves on scroll
+   COUPLE DOLL — Salsa Dancing Pair
+   Boy LEFT (big), Girl RIGHT (shorter)
+   On scroll → move toward center and dance
    ======================================== */
 
 #couple-doll-layer {
     position: fixed;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
     pointer-events: none;
-    opacity: 0.55;
-    transition: opacity 0.8s ease, transform 0.1s linear;
-    will-change: transform, opacity;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
 }
 
 .couple-doll-wrapper {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
     display: flex;
     align-items: flex-end;
-    justify-content: center;
-    gap: 0;
-    position: relative;
+    justify-content: space-between;
+    padding: 0 5%;
+    width: 100%;
+    transition: none;
 }
 
 .couple-boy {
     position: relative;
     z-index: 2;
-    transition: filter 1.2s ease;
+    transform-origin: center bottom;
+    transition: none;
+    will-change: transform;
+    filter: drop-shadow(0 8px 25px rgba(233, 30, 99, 0.15));
 }
 
 .couple-girl {
     position: relative;
     z-index: 2;
-    margin-left: -15px;
-    transition: filter 1.2s ease;
+    transform-origin: center bottom;
+    transition: none;
+    will-change: transform;
+    filter: drop-shadow(0 8px 25px rgba(255, 64, 129, 0.15));
 }
 
-.couple-hearts {
+.couple-hearts-container {
     position: absolute;
-    top: -20px;
+    bottom: 50%;
     left: 50%;
     transform: translateX(-50%);
     z-index: 3;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
 }
 
-/* Responsive scaling */
+#couple-doll-layer.close-together .couple-hearts-container {
+    opacity: 1;
+}
+
+/* Salsa floor glow */
+.salsa-floor {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 6px;
+    background: radial-gradient(ellipse, rgba(255, 64, 129, 0.15), transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    filter: blur(3px);
+}
+
+#couple-doll-layer.close-together .salsa-floor {
+    opacity: 1;
+    animation: floorPulse 2s ease infinite;
+}
+
+@keyframes floorPulse {
+    0%, 100% { transform: translateX(-50%) scaleX(1); opacity: 0.6; }
+    50% { transform: translateX(-50%) scaleX(1.2); opacity: 1; }
+}
+
+/* Sparkle particles around couple when dancing close */
+.dance-sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: danceSparkleAnim 1.5s ease-out forwards;
+}
+
+@keyframes danceSparkleAnim {
+    0% { opacity: 1; transform: translate(0, 0) scale(1); }
+    100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+}
+
+/* Responsive */
 @media (max-width: 768px) {
-    #couple-doll-layer {
-        bottom: 10px;
-        opacity: 0.4;
-        transform: translateX(-50%) scale(0.7);
+    .couple-doll-wrapper {
+        padding: 0 2%;
+    }
+    .couple-boy svg, .couple-girl svg {
+        transform: scale(0.75);
+        transform-origin: bottom center;
     }
 }
 
 @media (max-width: 480px) {
-    #couple-doll-layer {
-        bottom: 5px;
-        opacity: 0.35;
-        transform: translateX(-50%) scale(0.55);
+    .couple-boy svg, .couple-girl svg {
+        transform: scale(0.55);
+        transform-origin: bottom center;
     }
-}
-
-/* When scrolling actively — slightly more visible */
-#couple-doll-layer.dancing {
-    opacity: 0.7;
-}
-
-/* Smooth theme color transitions on the dolls */
-html.theme-transitioning #couple-doll-layer {
-    transition: opacity 1.2s ease !important;
 }

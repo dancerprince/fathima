@@ -1,6 +1,6 @@
 // ========================================
 // MAIN APPLICATION CONTROLLER
-// With Theme System Integration
+// Single Theme — No Transitions
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -34,16 +34,13 @@ function initLoadingScreen() {
     var loadInterval = setInterval(function() {
         progress += Math.random() * 15 + 5;
         if (progress >= 100) {
-            progress = 100;
-            clearInterval(loadInterval);
+            progress = 100; clearInterval(loadInterval);
             if (loadingBar) loadingBar.style.width = '100%';
             setTimeout(function() {
                 if (loadingScreen) { loadingScreen.style.opacity = '0'; loadingScreen.style.transition = 'opacity 0.6s ease'; }
                 setTimeout(function() { if (loadingScreen) loadingScreen.classList.add('hidden'); startCountdown(); }, 600);
             }, 500);
-        } else {
-            if (loadingBar) loadingBar.style.width = progress + '%';
-        }
+        } else { if (loadingBar) loadingBar.style.width = progress + '%'; }
     }, 300);
 }
 
@@ -56,7 +53,7 @@ function createLoadingPetals() {
             var petal = document.createElement('div');
             petal.className = 'petal';
             var shapeName = shapes[Math.floor(Math.random() * shapes.length)];
-            var colors = currentTheme.particleColors || ['#FFB6C1'];
+            var colors = currentTheme.particleColors || ['#FF4081'];
             var color = colors[Math.floor(Math.random() * colors.length)];
             var size = Math.random() * 14 + 14;
             petal.innerHTML = SVG[shapeName] ? SVG[shapeName](size, color, currentTheme.secondary) : SVG.heart(size, color);
@@ -77,12 +74,10 @@ function startCountdown() {
     countdownNumbers.innerHTML = '<span class="countdown-num">' + count + '</span>';
     var countInterval = setInterval(function() {
         count--;
-        if (count > 0) {
-            countdownNumbers.innerHTML = '<span class="countdown-num">' + count + '</span>';
-        } else {
+        if (count > 0) { countdownNumbers.innerHTML = '<span class="countdown-num">' + count + '</span>'; }
+        else {
             clearInterval(countInterval);
-            countdownScreen.style.opacity = '0';
-            countdownScreen.style.transition = 'opacity 0.6s ease';
+            countdownScreen.style.opacity = '0'; countdownScreen.style.transition = 'opacity 0.6s ease';
             setTimeout(function() { countdownScreen.classList.add('hidden'); showMainScreen(); }, 600);
         }
     }, 1000);
@@ -92,8 +87,7 @@ function showMainScreen() {
     var mainScreen = document.getElementById('main-screen');
     if (mainScreen) {
         mainScreen.classList.remove('hidden');
-        mainScreen.style.opacity = '0';
-        mainScreen.style.transition = 'opacity 0.8s ease';
+        mainScreen.style.opacity = '0'; mainScreen.style.transition = 'opacity 0.8s ease';
         requestAnimationFrame(function() { mainScreen.style.opacity = '1'; });
     }
     setTimeout(function() { if (typeof Confetti !== 'undefined') Confetti.launch(5000); }, 300);
@@ -103,12 +97,11 @@ function showMainScreen() {
     initHeroParticles();
     initScrollReveal();
 
-    // Initialize couple doll (background dancing characters)
+    // Initialize couple doll (boy left, girl right, salsa on scroll)
     if (typeof CoupleDoll !== 'undefined') {
         setTimeout(function() { CoupleDoll.init(); }, 500);
     }
 
-    // Start auto theme rotation (every 5s) and shape rotation (every 8s)
     if (typeof startThemeRotation === 'function') startThemeRotation();
 }
 
@@ -153,8 +146,7 @@ var favoriteQuotes = new Set();
 
 function initQuoteCarousel() {
     if (typeof loveQuotes === 'undefined') return;
-    showQuote(0);
-    createQuoteDots();
+    showQuote(0); createQuoteDots();
     var prevBtn = document.getElementById('quote-prev');
     var nextBtn = document.getElementById('quote-next');
     var shuffleBtn = document.getElementById('quote-shuffle');
@@ -191,7 +183,7 @@ function showQuote(index) {
     if (heartBtn && typeof SVG !== 'undefined') {
         var t = (typeof currentTheme !== 'undefined' && currentTheme) ? currentTheme : null;
         heartBtn.innerHTML = favoriteQuotes.has(index)
-            ? SVG.heart(24, t ? t.accent : '#FF69B4', t ? t.primary : '#FFB6C1')
+            ? SVG.heart(24, t ? t.accent : '#FF4081', t ? t.primary : '#E91E63')
             : SVG.heart(24, t ? t.primaryLight : '#DDD', '#EEE');
     }
     updateQuoteDots();
@@ -203,12 +195,11 @@ function createQuoteDots() {
     container.innerHTML = '';
     var maxDots = Math.min(loveQuotes.length, 20);
     for (var i = 0; i < maxDots; i++) {
-        var dot = document.createElement('div');
-        dot.className = 'quote-dot';
+        var dot = document.createElement('div'); dot.className = 'quote-dot';
         if (i === 0) dot.classList.add('active');
         (function(idx) {
-            var quoteIndex = Math.floor(idx * loveQuotes.length / maxDots);
-            dot.addEventListener('click', function() { currentQuote = quoteIndex; showQuote(currentQuote); });
+            var qi = Math.floor(idx * loveQuotes.length / maxDots);
+            dot.addEventListener('click', function() { currentQuote = qi; showQuote(currentQuote); });
         })(i);
         container.appendChild(dot);
     }
@@ -223,13 +214,13 @@ function updateQuoteDots() {
 }
 
 function toggleQuoteFavorite() {
-    if (favoriteQuotes.has(currentQuote)) { favoriteQuotes.delete(currentQuote); }
-    else { favoriteQuotes.add(currentQuote); }
+    if (favoriteQuotes.has(currentQuote)) favoriteQuotes.delete(currentQuote);
+    else favoriteQuotes.add(currentQuote);
     var heartBtn = document.getElementById('quote-heart-btn');
     if (heartBtn && typeof SVG !== 'undefined') {
         var t = (typeof currentTheme !== 'undefined' && currentTheme) ? currentTheme : null;
         heartBtn.innerHTML = favoriteQuotes.has(currentQuote)
-            ? SVG.heart(24, t ? t.accent : '#FF69B4', t ? t.primary : '#FFB6C1')
+            ? SVG.heart(24, t ? t.accent : '#FF4081', t ? t.primary : '#E91E63')
             : SVG.heart(24, t ? t.primaryLight : '#DDD', '#EEE');
         heartBtn.classList.add('liked');
         setTimeout(function() { heartBtn.classList.remove('liked'); }, 500);
@@ -249,8 +240,7 @@ function initFloatingBackground() {
     if (typeof SVG !== 'undefined' && typeof currentTheme !== 'undefined' && currentTheme) {
         var shapes = currentTheme.floatingShapes;
         for (var i = 0; i < 20; i++) {
-            var el = document.createElement('div');
-            el.className = 'bg-float';
+            var el = document.createElement('div'); el.className = 'bg-float';
             var shapeName = shapes[Math.floor(Math.random() * shapes.length)];
             var color = currentTheme.particleColors[Math.floor(Math.random() * currentTheme.particleColors.length)];
             el.innerHTML = SVG[shapeName] ? SVG[shapeName](24, color, currentTheme.secondary) : SVG.heart(24, color);
@@ -272,7 +262,7 @@ function initHeroParticles() {
             p.style.position = 'absolute';
             p.style.left = Math.random() * 100 + '%';
             p.style.top = Math.random() * 100 + '%';
-            p.style.opacity = Math.random() * 0.4 + 0.1;
+            p.style.opacity = Math.random() * 0.3 + 0.1;
             p.style.animation = 'twinkle ' + (Math.random() * 3 + 2) + 's ease-in-out infinite';
             p.style.animationDelay = Math.random() * 3 + 's';
             var shapeName = shapes[Math.floor(Math.random() * shapes.length)];
@@ -311,5 +301,5 @@ function toggleMusic() {
 
 document.addEventListener('DOMContentLoaded', function() {
     var cake = document.getElementById('cake-container');
-    if (cake) { cake.addEventListener('click', function() { if (typeof Confetti !== 'undefined') Confetti.launch(3000); }); }
+    if (cake) cake.addEventListener('click', function() { if (typeof Confetti !== 'undefined') Confetti.launch(3000); });
 });
