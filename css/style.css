@@ -3,6 +3,17 @@
    Deep midnight + neon rose/gold + aurora
    High Graphics: Glass, Particles, Neon Glow
    ======================================== */
+
+/* === Ensure all content stays ABOVE the fullscreen background video === */
+.main-screen { position: relative; z-index: 1; }
+.hero-section,
+.quotes-section,
+.timeline-section,
+.games-section,
+.letter-section,
+.main-footer,
+.birthday-countdown-section,
+.main-nav { z-index: 1; }
 :root {
     --pastel-pink: #E91E63;
     --pastel-rose: #F8BBD0;
