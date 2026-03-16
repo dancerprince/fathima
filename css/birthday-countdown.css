@@ -1,0 +1,264 @@
+/* ==================== BIRTHDAY COUNTDOWN SECTION ==================== */
+.birthday-countdown-section {
+    position: relative;
+    padding: 80px 20px;
+    min-height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 30%, #5b2c8e 60%, #d63384 100%);
+}
+
+.birthday-countdown-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.1) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.countdown-wrapper {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.countdown-main-title {
+    font-family: 'Great Vibes', cursive;
+    font-size: 3.5rem;
+    color: #fff;
+    text-shadow: 0 0 40px rgba(214,51,132,0.6), 0 2px 10px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    animation: countdownTitleGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes countdownTitleGlow {
+    0% { text-shadow: 0 0 20px rgba(214,51,132,0.4), 0 2px 10px rgba(0,0,0,0.3); }
+    100% { text-shadow: 0 0 60px rgba(214,51,132,0.8), 0 0 120px rgba(255,105,180,0.3), 0 2px 10px rgba(0,0,0,0.3); }
+}
+
+.countdown-date-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+}
+
+.countdown-date-label span {
+    color: #ff69b4;
+    font-weight: 600;
+}
+
+/* Timer Boxes */
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.countdown-box {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 25px 20px;
+    min-width: 120px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.countdown-box:hover {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: 0 20px 60px rgba(214,51,132,0.3);
+    border-color: rgba(255,105,180,0.4);
+}
+
+.countdown-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(255,105,180,0.1), transparent, rgba(214,51,132,0.1), transparent);
+    animation: countdownBoxRotate 6s linear infinite;
+}
+
+@keyframes countdownBoxRotate {
+    100% { transform: rotate(360deg); }
+}
+
+.countdown-box-inner {
+    position: relative;
+    z-index: 1;
+}
+
+.countdown-value {
+    font-family: 'Poppins', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+    display: block;
+    min-height: 60px;
+    transition: transform 0.3s ease;
+}
+
+.countdown-value.flip {
+    animation: countdownFlip 0.6s ease;
+}
+
+@keyframes countdownFlip {
+    0% { transform: rotateX(0deg); }
+    50% { transform: rotateX(90deg); opacity: 0.5; }
+    100% { transform: rotateX(0deg); opacity: 1; }
+}
+
+.countdown-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-top: 8px;
+    display: block;
+}
+
+/* Separator */
+.countdown-separator {
+    display: flex;
+    align-items: center;
+    font-size: 2.5rem;
+    color: rgba(255,255,255,0.3);
+    font-weight: 300;
+    padding-bottom: 25px;
+    animation: countdownSepPulse 1s ease-in-out infinite;
+}
+
+@keyframes countdownSepPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; color: #ff69b4; }
+}
+
+/* Birthday Message (when it IS the birthday) */
+.countdown-birthday-msg {
+    display: none;
+    text-align: center;
+    animation: countdownReveal 1s ease forwards;
+}
+
+.countdown-birthday-msg.active {
+    display: block;
+}
+
+@keyframes countdownReveal {
+    0% { opacity: 0; transform: scale(0.5); }
+    60% { transform: scale(1.1); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.countdown-birthday-msg h2 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 4rem;
+    color: #ff69b4;
+    text-shadow: 0 0 40px rgba(255,105,180,0.6);
+    margin-bottom: 10px;
+}
+
+.countdown-birthday-msg p {
+    font-family: 'Poppins', sans-serif;
+    color: rgba(255,255,255,0.8);
+    font-size: 1.2rem;
+}
+
+/* Floating particles */
+.countdown-particles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.countdown-particle {
+    position: absolute;
+    font-size: 1.2rem;
+    opacity: 0;
+    animation: countdownFloat 8s ease-in-out infinite;
+}
+
+@keyframes countdownFloat {
+    0% { opacity: 0; transform: translateY(100%) scale(0); }
+    20% { opacity: 0.8; transform: translateY(60%) scale(1); }
+    80% { opacity: 0.6; transform: translateY(-20%) scale(0.8); }
+    100% { opacity: 0; transform: translateY(-100%) scale(0); }
+}
+
+/* Progress ring */
+.countdown-progress {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.progress-item {
+    text-align: center;
+}
+
+.progress-ring {
+    width: 60px;
+    height: 60px;
+    transform: rotate(-90deg);
+}
+
+.progress-ring-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.1);
+    stroke-width: 4;
+}
+
+.progress-ring-fill {
+    fill: none;
+    stroke: #ff69b4;
+    stroke-width: 4;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s ease;
+    filter: drop-shadow(0 0 6px rgba(255,105,180,0.5));
+}
+
+.progress-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 5px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .countdown-main-title { font-size: 2.5rem; }
+    .countdown-timer { gap: 12px; }
+    .countdown-box { min-width: 70px; padding: 15px 12px; border-radius: 14px; }
+    .countdown-value { font-size: 2.2rem; min-height: 40px; }
+    .countdown-label { font-size: 0.7rem; }
+    .countdown-separator { font-size: 1.8rem; padding-bottom: 15px; }
+    .countdown-birthday-msg h2 { font-size: 2.8rem; }
+}
+
+@media (max-width: 480px) {
+    .birthday-countdown-section { padding: 50px 15px; }
+    .countdown-main-title { font-size: 2rem; }
+    .countdown-box { min-width: 60px; padding: 12px 8px; }
+    .countdown-value { font-size: 1.8rem; }
+    .countdown-separator { font-size: 1.4rem; }
+}
