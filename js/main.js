@@ -1,6 +1,6 @@
 // ========================================
 // MAIN APPLICATION CONTROLLER
-// Love Timeline Intro → Countdown → Main App
+// Audio Tap -> Love Timeline Intro -> Countdown -> Main App
 // ========================================
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -10,19 +10,34 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof applyThemedImages === 'function') applyThemedImages();
     if (typeof Confetti !== 'undefined') Confetti.init();
 
-    // Hide old loading screen immediately — Love Timeline replaces it
+    // Hide old loading screen immediately
     var loadingScreen = document.getElementById('loading-screen');
     if (loadingScreen) loadingScreen.classList.add('hidden');
 
-    // Start the Love Timeline intro → then countdown → then main screen
+    // Step 1: AudioController shows "Tap to Begin" overlay
+    // On tap -> music starts playing in loop -> then timeline starts
+    if (typeof AudioController !== 'undefined') {
+        AudioController.init(function() {
+            // This callback fires after user taps - music is now playing
+            startTimelineIntro();
+        });
+    } else {
+        // Fallback: no audio controller, start directly
+        startTimelineIntro();
+    }
+});
+
+function startTimelineIntro() {
     if (typeof LoveTimeline !== 'undefined') {
         LoveTimeline.init(function() {
+            // Duck audio slightly during countdown for dramatic effect
+            if (typeof AudioController !== 'undefined') AudioController.duckVolume();
             startCountdown();
         });
     } else {
         startCountdown();
     }
-});
+}
 
 function startCountdown() {
     var countdownScreen = document.getElementById('countdown-screen');
@@ -43,6 +58,9 @@ function startCountdown() {
 }
 
 function showMainScreen() {
+    // Restore audio volume for main app
+    if (typeof AudioController !== 'undefined') AudioController.restoreVolume();
+
     var mainScreen = document.getElementById('main-screen');
     if (mainScreen) {
         mainScreen.classList.remove('hidden');
@@ -64,6 +82,12 @@ function showMainScreen() {
     // Insert the Love Roadmap section into the main page
     if (typeof LoveRoadmap !== 'undefined') {
         setTimeout(function() { LoveRoadmap.insertIntoPage(); }, 800);
+    }
+
+    // Tell AudioController that main app is loaded
+    // It will show the mute button after the song completes one full loop
+    if (typeof AudioController !== 'undefined') {
+        setTimeout(function() { AudioController.showMuteButtonNow(); }, 1000);
     }
 
     if (typeof startThemeRotation === 'function') startThemeRotation();
@@ -254,12 +278,10 @@ function openEnvelope() {
     setTimeout(function() { if (typeof Confetti !== 'undefined') Confetti.launch(4000); }, 200);
 }
 
-var musicPlaying = false;
+// Music toggle - now handled by AudioController
 function toggleMusic() {
-    musicPlaying = !musicPlaying;
-    var btn = document.getElementById('music-toggle');
-    if (btn && typeof SVG !== 'undefined' && typeof currentTheme !== 'undefined' && currentTheme) {
-        btn.innerHTML = SVG.music(20, musicPlaying ? currentTheme.accent : currentTheme.textLight);
+    if (typeof AudioController !== 'undefined') {
+        AudioController.toggleMute();
     }
 }
 

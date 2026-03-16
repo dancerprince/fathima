@@ -77,8 +77,9 @@ function applyThemedImages() {
     const footerYear = document.querySelector('.footer-year');
     if (footerYear) footerYear.innerHTML = `${SVG.ring(16, t.accent)} Forever & Always ${SVG.ring(16, t.accent)}`;
 
-    const musicToggle = document.getElementById('music-toggle');
-    if (musicToggle) { musicToggle.innerHTML = SVG.music(20, t.textLight); musicToggle.dataset.playing = 'false'; }
+    // Music toggle is now handled by AudioController - don't override its icon
+    // const musicToggle = document.getElementById('music-toggle');
+    // if (musicToggle) { musicToggle.innerHTML = SVG.music(20, t.textLight); }
 
     const quoteShuffle = document.getElementById('quote-shuffle');
     if (quoteShuffle) quoteShuffle.innerHTML = `${SVG.getShape('star-4', 14, t)} Shuffle`;
