@@ -916,7 +916,7 @@
 /* ===== ROADMAP FIREWORK DECORATIONS ===== */
 .love-roadmap-section {
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Decorative floating elements on roadmap */

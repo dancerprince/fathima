@@ -915,7 +915,8 @@ const LoveRoadmap = (function() {
     // ===== FIREWORKS on roadmap timeline items =====
     function launchRoadmapFireworks(element, index) {
         // Only fire on every 3rd item or special milestones to avoid overload
-        if (index % 3 !== 0 && index !== memories.length - 1) return;
+        const allMemories = LoveTimeline.getMemories();
+        if (index % 3 !== 0 && index !== allMemories.length - 1) return;
         const rect = element.getBoundingClientRect();
         const section = document.getElementById('love-roadmap');
         if (!section) return;

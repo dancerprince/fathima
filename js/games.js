@@ -48,7 +48,7 @@ function resetMemoryGame(){
     for(var i=pairs.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=pairs[i];pairs[i]=pairs[j];pairs[j]=tmp;}
     memoryCards=pairs;
     var board=document.getElementById('memory-board');board.innerHTML='';
-    var cardBack=getThemeShape(currentTheme?currentTheme.cursorShape:'heart',28);
+    var cardBack=getThemeShape(currentTheme?currentTheme.cursorShape:'heart',40);
     memoryCards.forEach(function(cardData,idx){
         var card=document.createElement('div');card.className='memory-card';card.dataset.index=idx;card.dataset.cardId=cardData.id;
         card.innerHTML='<div class="card-face card-front">'+cardBack+'</div><div class="card-face card-back">'+cardData.html+'</div>';

@@ -113,6 +113,10 @@
     border: 1px solid rgba(233,30,99,0.15);
     color: white; font-size: 1.5rem;
 }
+.card-front svg {
+    width: 40px; height: 40px;
+    display: block;
+}
 .card-back {
     background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.1);
@@ -389,12 +393,12 @@
     will-change: transform;
     -webkit-transform-style: preserve-3d;
     transform-style: preserve-3d;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    /* DO NOT add backface-visibility here — it breaks the 3D card flip */
 }
 .card-face {
     will-change: transform;
     -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
 }
 .game-card {
     will-change: transform;
