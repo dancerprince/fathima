@@ -18,31 +18,45 @@ function getRandomThemeShape(size) {
     return '';
 }
 
-// 1. MEMORY MATCH
+// 1. MEMORY MATCH — FIXED: Uses ID-based pair matching instead of HTML string comparison
 var memoryCards=[],memoryFlipped=[],memoryMatched=0,memoryMoves=0,memoryTimer=null,memorySeconds=0,memoryLocked=false;
 function getMemoryShapes() {
     if (typeof SVG!=='undefined'&&typeof currentTheme!=='undefined'&&currentTheme) {
         var t=currentTheme,allShapes=['heart','rose','butterfly','sakura','leaf','daisy','shell','crown','gem','moon','sun','star-5','cherry','candy','blossom','sparkle'];
         var themeShapes=t.shapes.concat(t.floatingShapes),uniqueShapes=[],seen={};
         themeShapes.concat(allShapes).forEach(function(s){if(!seen[s]&&SVG[s]&&uniqueShapes.length<8){seen[s]=true;uniqueShapes.push(s);}});
-        return uniqueShapes.map(function(s,i){var color=t.particleColors[i%t.particleColors.length];return SVG[s](36,color,t.secondary);});
+        return uniqueShapes.map(function(s,i){
+            var color=t.particleColors[i%t.particleColors.length];
+            return { id: s, html: SVG[s](36,color,t.secondary) };
+        });
     }
-    return ['1','2','3','4','5','6','7','8'];
+    return [{id:'a',html:'❤️'},{id:'b',html:'💕'},{id:'c',html:'🌹'},{id:'d',html:'🦋'},{id:'e',html:'🌸'},{id:'f',html:'💎'},{id:'g',html:'⭐'},{id:'h',html:'🌙'}];
 }
 function startMemoryGame(){document.getElementById('memory-modal').classList.remove('hidden');resetMemoryGame();}
 function resetMemoryGame(){
     memoryMatched=0;memoryMoves=0;memorySeconds=0;memoryLocked=false;memoryFlipped=[];
     document.getElementById('memory-moves').textContent='0';document.getElementById('memory-pairs').textContent='0';document.getElementById('memory-time').textContent='0:00';
+    // Remove any previous win message
+    var oldWin=document.querySelector('.memory-win-msg');if(oldWin)oldWin.remove();
     if(memoryTimer)clearInterval(memoryTimer);
     memoryTimer=setInterval(function(){memorySeconds++;var m=Math.floor(memorySeconds/60),s=memorySeconds%60;document.getElementById('memory-time').textContent=m+':'+(s<10?'0':'')+s;},1000);
-    var svgs=getMemoryShapes(),pairs=svgs.concat(svgs.slice());
-    memoryCards=pairs.sort(function(){return Math.random()-0.5;});
+    var shapes=getMemoryShapes();
+    // Create pairs: each shape appears exactly twice, matched by stable ID
+    var pairs=[];
+    shapes.forEach(function(shape){ pairs.push({id:shape.id,html:shape.html}); pairs.push({id:shape.id,html:shape.html}); });
+    // Fisher-Yates shuffle for proper randomization
+    for(var i=pairs.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var tmp=pairs[i];pairs[i]=pairs[j];pairs[j]=tmp;}
+    memoryCards=pairs;
     var board=document.getElementById('memory-board');board.innerHTML='';
     var cardBack=getThemeShape(currentTheme?currentTheme.cursorShape:'heart',28);
-    memoryCards.forEach(function(svg,i){
-        var card=document.createElement('div');card.className='memory-card';card.dataset.index=i;
-        card.innerHTML='<div class="card-face card-front">'+cardBack+'</div><div class="card-face card-back">'+svg+'</div>';
-        card.addEventListener('click',function(){flipMemoryCard(card,i);});board.appendChild(card);
+    memoryCards.forEach(function(cardData,idx){
+        var card=document.createElement('div');card.className='memory-card';card.dataset.index=idx;card.dataset.cardId=cardData.id;
+        card.innerHTML='<div class="card-face card-front">'+cardBack+'</div><div class="card-face card-back">'+cardData.html+'</div>';
+        card.addEventListener('click',function(){flipMemoryCard(card,idx);});
+        // Staggered entrance animation
+        card.style.opacity='0';card.style.transform='scale(0.3)';
+        setTimeout(function(){card.style.transition='all 0.4s cubic-bezier(0.34,1.56,0.64,1)';card.style.opacity='1';card.style.transform='scale(1)';},idx*50+100);
+        board.appendChild(card);
     });
 }
 function flipMemoryCard(card,index){
@@ -52,11 +66,25 @@ function flipMemoryCard(card,index){
     if(memoryFlipped.length===2){
         memoryMoves++;document.getElementById('memory-moves').textContent=memoryMoves;memoryLocked=true;
         var f=memoryFlipped[0],s=memoryFlipped[1];
-        if(memoryCards[f.index]===memoryCards[s.index]){
-            f.card.classList.add('matched');s.card.classList.add('matched');memoryMatched++;
-            document.getElementById('memory-pairs').textContent=memoryMatched;memoryFlipped=[];memoryLocked=false;
-            if(memoryMatched===8){clearInterval(memoryTimer);setTimeout(function(){alert('All pairs in '+memoryMoves+' moves & '+memorySeconds+'s! Amazing, Fathima Rukshana!');},500);}
-        }else{setTimeout(function(){f.card.classList.remove('flipped');s.card.classList.remove('flipped');memoryFlipped=[];memoryLocked=false;},800);}
+        // FIX: Compare by stable ID instead of HTML string
+        if(memoryCards[f.index].id===memoryCards[s.index].id){
+            setTimeout(function(){
+                f.card.classList.add('matched');s.card.classList.add('matched');memoryMatched++;
+                document.getElementById('memory-pairs').textContent=memoryMatched;memoryFlipped=[];memoryLocked=false;
+                // Matched celebration pulse
+                [f.card,s.card].forEach(function(c){c.style.transform='rotateY(180deg) scale(1.15)';setTimeout(function(){c.style.transform='rotateY(180deg) scale(1)';},300);});
+                if(memoryMatched===8){
+                    clearInterval(memoryTimer);
+                    setTimeout(function(){
+                        var mc=document.querySelector('#memory-modal .modal-content');
+                        if(mc){var win=document.createElement('div');win.className='memory-win-msg';
+                        win.innerHTML='<div class="memory-win-emoji">🎉</div><h3>Amazing, Fathima Rukshana!</h3><p>All pairs in <strong>'+memoryMoves+'</strong> moves & <strong>'+memorySeconds+'</strong>s!</p>';
+                        mc.appendChild(win);setTimeout(function(){win.classList.add('visible');},50);}
+                        if(typeof Confetti!=='undefined')Confetti.launch(4000);
+                    },500);
+                }
+            },300);
+        }else{setTimeout(function(){f.card.classList.remove('flipped');s.card.classList.remove('flipped');memoryFlipped=[];memoryLocked=false;},900);}
     }
 }
 

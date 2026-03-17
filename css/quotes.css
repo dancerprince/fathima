@@ -41,6 +41,33 @@
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     transition: var(--transition); flex: 1; max-width: 550px;
+    overflow: hidden;
+    will-change: transform;
+}
+/* Decorative animated top border on quote card */
+.quote-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FF4081, #FFD700, transparent);
+    background-size: 200% 100%;
+    animation: borderSlide 4s linear infinite;
+    opacity: 0.6;
+}
+@keyframes borderSlide {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+/* Corner decorative ornament */
+.quote-card::after {
+    content: '❝';
+    position: absolute;
+    top: -5px; right: 15px;
+    font-size: 3rem;
+    color: rgba(255,64,129,0.06);
+    font-family: serif;
+    pointer-events: none;
 }
 .quote-card:hover { box-shadow: var(--shadow-strong); transform: translateY(-3px); }
 .quote-number {

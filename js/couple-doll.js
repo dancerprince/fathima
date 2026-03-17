@@ -158,7 +158,10 @@ var CoupleDoll = {
             mainScreen.insertBefore(this.container, mainScreen.firstChild);
         } else {
             document.body.appendChild(this.container);
-this.video = document.getElementById('couple-dance-video');
+        }
+
+        /* These lines MUST run regardless of where container was inserted */
+        this.video = document.getElementById('couple-dance-video');
         this.labelEl = document.getElementById('dance-step-label');
         this.progressFill = document.getElementById('dance-progress-fill');
 

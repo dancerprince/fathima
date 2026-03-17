@@ -323,6 +323,89 @@
     .wish-paper p { font-size: 0.95rem; }
 }
 
+/* Memory Win Message */
+.memory-win-msg {
+    margin-top: 20px;
+    padding: 25px;
+    background: rgba(255, 64, 129, 0.08);
+    border: 1px solid rgba(255, 64, 129, 0.2);
+    border-radius: 16px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px) scale(0.9);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.memory-win-msg.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+.memory-win-emoji {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    animation: matchPulse 1s ease infinite;
+}
+.memory-win-msg h3 {
+    font-family: 'Great Vibes', cursive;
+    font-size: 1.6rem;
+    background: linear-gradient(135deg, #FF4081, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+.memory-win-msg p {
+    color: var(--text-medium);
+    font-size: 0.95rem;
+}
+
+/* Game End Message (replaces alerts) */
+.game-end-msg {
+    margin-top: 20px;
+    padding: 25px;
+    background: rgba(255, 215, 0, 0.06);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 16px;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.game-end-msg.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+.game-end-emoji {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+.game-end-msg p {
+    color: var(--text-dark);
+    font-size: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+/* ===== SMOOTHNESS: GPU acceleration for game cards ===== */
+.memory-card {
+    will-change: transform;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+.card-face {
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+}
+.game-card {
+    will-change: transform;
+}
+.game-modal {
+    will-change: opacity;
+}
+.falling-heart {
+    will-change: top, transform;
+}
+
 /* Touch-friendly tap targets (min 44px) */
 @media (pointer: coarse) {
     .memory-card { min-height: 50px; min-width: 50px; }

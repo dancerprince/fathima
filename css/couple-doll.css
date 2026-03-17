@@ -40,6 +40,9 @@
     opacity: 0.45;
     filter: brightness(0.85) saturate(1.1);
     transition: opacity 0.8s ease, filter 0.8s ease;
+    will-change: opacity, filter;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 #couple-doll-layer.dancing .couple-dance-video {

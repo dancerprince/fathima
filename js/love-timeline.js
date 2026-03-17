@@ -387,6 +387,20 @@ const LoveTimeline = (function() {
             <!-- Skip button -->
             <button class="timeline-skip" id="tl-skip">Skip →</button>
 
+            <!-- Mute button in timeline -->
+            <button class="tl-mute-btn" id="tl-mute-btn" title="Toggle Music">
+                <svg class="tl-mute-icon-on" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <svg class="tl-mute-icon-off" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+
             <!-- Counter -->
             <div class="memory-counter" id="tl-counter"></div>
 
@@ -759,6 +773,22 @@ const LoveTimeline = (function() {
             skipBtn.addEventListener('click', skip);
         }
 
+        // Mute button in timeline
+        const muteBtn = document.getElementById('tl-mute-btn');
+        if (muteBtn) {
+            let tlMuted = false;
+            muteBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                if (typeof AudioController !== 'undefined') {
+                    AudioController.toggleMute();
+                    tlMuted = !tlMuted;
+                    muteBtn.querySelector('.tl-mute-icon-on').style.display = tlMuted ? 'none' : 'block';
+                    muteBtn.querySelector('.tl-mute-icon-off').style.display = tlMuted ? 'block' : 'none';
+                    muteBtn.classList.toggle('muted', tlMuted);
+                }
+            });
+        }
+
         // Navigation buttons
         const prevBtn = document.getElementById('tl-nav-prev');
         const nextBtn = document.getElementById('tl-nav-next');
@@ -867,10 +897,11 @@ const LoveRoadmap = (function() {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Stagger animation based on index
                     const index = parseInt(entry.target.dataset.index) || 0;
                     setTimeout(() => {
                         entry.target.classList.add('visible');
+                        // Launch fireworks on left and right sides for milestone items
+                        launchRoadmapFireworks(entry.target, index);
                     }, (index % 5) * 100);
                 }
             });
@@ -879,6 +910,57 @@ const LoveRoadmap = (function() {
         document.querySelectorAll('.roadmap-item').forEach(item => {
             observer.observe(item);
         });
+    }
+
+    // ===== FIREWORKS on roadmap timeline items =====
+    function launchRoadmapFireworks(element, index) {
+        // Only fire on every 3rd item or special milestones to avoid overload
+        if (index % 3 !== 0 && index !== memories.length - 1) return;
+        const rect = element.getBoundingClientRect();
+        const section = document.getElementById('love-roadmap');
+        if (!section) return;
+
+        const colors = ['#FF4081', '#FFD700', '#FF1493', '#9C27B0', '#AB47BC', '#E91E63', '#FF69B4', '#CE93D8'];
+
+        // Left side firework
+        createFireworkBurst(section, 40, rect.top - section.getBoundingClientRect().top + rect.height/2, colors);
+        // Right side firework
+        createFireworkBurst(section, section.offsetWidth - 40, rect.top - section.getBoundingClientRect().top + rect.height/2, colors);
+    }
+
+    function createFireworkBurst(container, x, y, colors) {
+        const particleCount = window.innerWidth < 768 ? 8 : 14;
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'roadmap-firework-particle';
+            const angle = (Math.PI * 2 * i) / particleCount;
+            const distance = 30 + Math.random() * 50;
+            const dx = Math.cos(angle) * distance;
+            const dy = Math.sin(angle) * distance;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const size = 3 + Math.random() * 4;
+            particle.style.cssText = 'position:absolute;left:'+x+'px;top:'+y+'px;width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+color+';pointer-events:none;z-index:10;box-shadow:0 0 6px '+color+',0 0 12px '+color+';';
+            particle.style.setProperty('--fw-dx', dx+'px');
+            particle.style.setProperty('--fw-dy', dy+'px');
+            container.appendChild(particle);
+            // Trigger animation
+            requestAnimationFrame(function() {
+                particle.style.transition = 'all 0.8s cubic-bezier(0.25,0.46,0.45,0.94)';
+                particle.style.transform = 'translate('+dx+'px,'+dy+'px) scale(0)';
+                particle.style.opacity = '0';
+            });
+            setTimeout(function(){ if(particle.parentNode) particle.parentNode.removeChild(particle); }, 1000);
+        }
+        // Center flash
+        const flash = document.createElement('div');
+        flash.style.cssText = 'position:absolute;left:'+(x-10)+'px;top:'+(y-10)+'px;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,0.8),rgba(255,64,129,0.3),transparent);pointer-events:none;z-index:10;';
+        container.appendChild(flash);
+        requestAnimationFrame(function() {
+            flash.style.transition = 'all 0.5s ease-out';
+            flash.style.transform = 'scale(3)';
+            flash.style.opacity = '0';
+        });
+        setTimeout(function(){ if(flash.parentNode) flash.parentNode.removeChild(flash); }, 600);
     }
 
     function addNavLink() {

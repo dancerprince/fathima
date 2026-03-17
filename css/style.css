@@ -58,7 +58,7 @@
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
-html { scroll-behavior:smooth; overflow-x:hidden; }
+html { scroll-behavior:smooth; overflow-x:hidden; scroll-snap-type: y proximity; }
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -68,6 +68,17 @@ body {
     min-height: 100vh;
     -webkit-text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* GPU acceleration for smooth animations */
+.hero-section, .quotes-section, .timeline-section, .games-section,
+.letter-section, .birthday-countdown-section {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 
 /* Aurora glow overlay */
@@ -392,6 +403,59 @@ body::after {
     100% { transform:scale(1.12) rotate(3deg); opacity:0.82; }
 }
 
+/* ===== Decorative Dividers between sections ===== */
+.hero-section::after {
+    content:'';
+    position:absolute;
+    bottom:0; left:10%; right:10%; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,64,129,0.2), rgba(255,215,0,0.15), rgba(255,64,129,0.2), transparent);
+    z-index:10;
+}
+.quotes-section { position:relative; }
+.quotes-section::before {
+    content:'✨';
+    position:absolute;
+    top:-20px; left:50%;
+    transform:translateX(-50%);
+    font-size:1.5rem;
+    filter:drop-shadow(0 0 8px rgba(255,215,0,0.4));
+    animation:badgeRotate 6s ease-in-out infinite;
+    z-index:5;
+}
+.timeline-section::before {
+    content:'';
+    position:absolute;
+    top:0; left:15%; right:15%; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(156,39,176,0.2), rgba(255,215,0,0.12), rgba(156,39,176,0.2), transparent);
+}
+.games-section { position:relative; }
+.games-section::before {
+    content:'';
+    position:absolute;
+    top:0; left:10%; right:10%; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(233,30,99,0.15), rgba(255,215,0,0.1), rgba(233,30,99,0.15), transparent);
+}
+.letter-section::before {
+    content:'';
+    position:absolute;
+    top:0; left:20%; right:20%; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,64,129,0.2), transparent);
+}
+
+/* ===== Decorative corner ornaments for sections ===== */
+.quotes-section::after,
+.timeline-section::after {
+    content:'';
+    position:absolute;
+    top:30px; right:30px;
+    width:60px; height:60px;
+    border-top:2px solid rgba(255,64,129,0.08);
+    border-right:2px solid rgba(255,64,129,0.08);
+    border-radius:0 12px 0 0;
+    pointer-events:none;
+    z-index:1;
+}
+
 /* Section Headers */
 .section-header { text-align:center; margin-bottom:50px; }
 .section-badge {
@@ -522,6 +586,25 @@ body::after {
     font-family:'Great Vibes',cursive; font-size:1.8rem;
     background:linear-gradient(135deg, #FF4081, #FFD700);
     -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+
+/* ===== Twinkle animation for hero particles ===== */
+@keyframes twinkle {
+    0%, 100% { opacity:0.1; transform:scale(0.8); }
+    50% { opacity:0.5; transform:scale(1.2); }
+}
+
+/* ===== Decorative floating orbs in celebration section ===== */
+.timeline-section::after {
+    content:'';
+    position:absolute;
+    bottom:30px; left:30px;
+    width:60px; height:60px;
+    border-bottom:2px solid rgba(255,215,0,0.06);
+    border-left:2px solid rgba(255,215,0,0.06);
+    border-radius:0 0 0 12px;
+    pointer-events:none;
+    z-index:1;
 }
 
 /* Footer */

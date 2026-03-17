@@ -166,6 +166,14 @@
 }
 
 
+/* ===== Smooth tap overlay transition ===== */
+.audio-tap-overlay {
+    will-change: transform, opacity;
+}
+.tap-content {
+    will-change: transform;
+}
+
 /* ===== ENHANCED MUTE/UNMUTE BUTTON ===== */
 .music-toggle {
     position: fixed;

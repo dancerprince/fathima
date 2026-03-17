@@ -874,6 +874,69 @@
     animation: tlNavRipple 0.4s ease-out;
 }
 
+/* ===== MUTE BUTTON IN TIMELINE ===== */
+.tl-mute-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 200002;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 64, 129, 0.2);
+    background: rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+.tl-mute-btn:hover {
+    background: rgba(255, 64, 129, 0.12);
+    color: #FF4081;
+    border-color: rgba(255, 64, 129, 0.4);
+    transform: scale(1.1);
+}
+.tl-mute-btn:active {
+    transform: scale(0.95);
+}
+.tl-mute-btn.muted {
+    color: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.08);
+}
+.tl-mute-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+/* ===== ROADMAP FIREWORK DECORATIONS ===== */
+.love-roadmap-section {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Decorative floating elements on roadmap */
+.love-roadmap-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 40% 30% at 10% 20%, rgba(255,64,129,0.04), transparent),
+        radial-gradient(ellipse 40% 30% at 90% 80%, rgba(156,39,176,0.04), transparent),
+        radial-gradient(ellipse 30% 20% at 50% 50%, rgba(255,215,0,0.02), transparent);
+    pointer-events: none;
+    z-index: 0;
+    animation: roadmapAurora 20s ease-in-out infinite alternate;
+}
+@keyframes roadmapAurora {
+    0% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
 /* ===== RESPONSIVE TIMELINE INTRO ===== */
 @media (max-width: 768px) {
     .welcome-text { font-size: 3rem; }
@@ -884,6 +947,8 @@
     .bridge-text { font-size: 1.5rem; }
     .memory-date { font-size: 0.9rem; letter-spacing: 3px; }
     .calendar-day { font-size: 3rem; }
+    .tl-mute-btn { width: 40px; height: 40px; top: 15px; left: 15px; }
+    .tl-mute-btn svg { width: 16px; height: 16px; }
 
     .tl-nav-controls {
         right: 15px;
@@ -922,6 +987,8 @@
     .memory-event { font-size: 0.85rem; }
     .memory-quote { font-size: 0.88rem; }
     .bridge-text { font-size: 1.2rem; }
+    .tl-mute-btn { width: 36px; height: 36px; top: 12px; left: 12px; }
+    .tl-mute-btn svg { width: 14px; height: 14px; }
 
     .tl-nav-controls {
         right: 12px;

@@ -244,6 +244,35 @@
     margin-top: 5px;
 }
 
+/* ===== Decorative corner sparkles ===== */
+.birthday-countdown-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle 2px at 10% 15%, rgba(255,255,255,0.4), transparent 3px),
+        radial-gradient(circle 2px at 90% 20%, rgba(255,255,255,0.3), transparent 3px),
+        radial-gradient(circle 1.5px at 15% 80%, rgba(255,255,255,0.35), transparent 3px),
+        radial-gradient(circle 2px at 85% 75%, rgba(255,255,255,0.3), transparent 3px),
+        radial-gradient(circle 1px at 50% 10%, rgba(255,255,255,0.5), transparent 2px),
+        radial-gradient(circle 1.5px at 30% 50%, rgba(255,255,255,0.25), transparent 3px),
+        radial-gradient(circle 1px at 70% 60%, rgba(255,255,255,0.3), transparent 2px);
+    pointer-events: none;
+    animation: tapStarsTwinkle 5s ease-in-out infinite alternate;
+    z-index: 1;
+}
+@keyframes tapStarsTwinkle2 {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.8; }
+}
+
+/* Smooth countdown box transitions */
+.countdown-box {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .countdown-main-title { font-size: 2.5rem; }

@@ -141,7 +141,12 @@ function updateActiveNavLink() {
 
 function smoothScroll(target) {
     var el = document.querySelector(target);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (el) {
+        // Smooth scroll with offset for nav
+        var navHeight = 80;
+        var elementPosition = el.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: elementPosition - navHeight, behavior: 'smooth' });
+    }
 }
 
 var currentQuote = 0;

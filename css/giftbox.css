@@ -71,6 +71,30 @@
     box-shadow: var(--shadow-strong), 0 0 60px rgba(233,30,99,0.08);
     border: 1px solid rgba(255,255,255,0.06); position: relative;
     animation: giftPopIn 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    overflow: hidden;
+}
+/* Decorative top/bottom borders on gift card */
+.gift-quote-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #FF4081, #FFD700, #FF1493, transparent);
+    background-size: 200% 100%;
+    animation: borderSlide 3s linear infinite;
+}
+.gift-quote-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #9C27B0, #FFD700, transparent);
+    background-size: 200% 100%;
+    animation: borderSlide 3s linear infinite reverse;
+}
+@keyframes borderSlide {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 @keyframes giftPopIn {
     from { opacity: 0; transform: scale(0.5) translateY(30px); }
