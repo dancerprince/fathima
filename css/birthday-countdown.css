@@ -1,4 +1,6 @@
 /* ==================== BIRTHDAY COUNTDOWN SECTION ==================== */
+/* Theme: Royal Elegance — matches site dark midnight + neon rose/gold/aurora */
+
 .birthday-countdown-section {
     position: relative;
     padding: 80px 20px;
@@ -7,15 +9,25 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background: linear-gradient(135deg, #1a0a2e 0%, #2d1b69 30%, #5b2c8e 60%, #d63384 100%);
+    background: linear-gradient(180deg, var(--bg-primary, #05000d) 0%, var(--bg-secondary, #10001a) 50%, var(--bg-primary, #05000d) 100%);
 }
 
+/* Aurora-style radial glow overlay */
 .birthday-countdown-section::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.1) 0%, transparent 60%);
+    background:
+        radial-gradient(ellipse 80% 60% at 20% 30%, rgba(233,30,99,0.07), transparent 70%),
+        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(156,39,176,0.06), transparent 60%),
+        radial-gradient(ellipse 90% 70% at 50% 80%, rgba(255,215,0,0.03), transparent 70%);
     pointer-events: none;
+    animation: countdownAuroraShift 25s ease-in-out infinite alternate;
+}
+@keyframes countdownAuroraShift {
+    0% { opacity: 1; filter: hue-rotate(0deg); }
+    50% { opacity: 0.85; filter: hue-rotate(10deg); }
+    100% { opacity: 1; filter: hue-rotate(-6deg); }
 }
 
 .countdown-wrapper {
@@ -29,32 +41,39 @@
 .countdown-main-title {
     font-family: 'Great Vibes', cursive;
     font-size: 3.5rem;
-    color: #fff;
-    text-shadow: 0 0 40px rgba(214,51,132,0.6), 0 2px 10px rgba(0,0,0,0.3);
+    background: linear-gradient(135deg, #FF4081, #FFD700, #FF1493);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 25px rgba(255,64,129,0.2));
     margin-bottom: 10px;
-    animation: countdownTitleGlow 3s ease-in-out infinite alternate;
+    animation: countdownTitleGlow 4s ease infinite;
 }
 
 @keyframes countdownTitleGlow {
-    0% { text-shadow: 0 0 20px rgba(214,51,132,0.4), 0 2px 10px rgba(0,0,0,0.3); }
-    100% { text-shadow: 0 0 60px rgba(214,51,132,0.8), 0 0 120px rgba(255,105,180,0.3), 0 2px 10px rgba(0,0,0,0.3); }
+    0%, 100% { background-position: 0% 50%; filter: drop-shadow(0 0 25px rgba(255,64,129,0.2)); }
+    50% { background-position: 100% 50%; filter: drop-shadow(0 0 40px rgba(255,215,0,0.2)); }
 }
 
 .countdown-date-label {
     font-family: 'Poppins', sans-serif;
     font-size: 1.1rem;
-    color: rgba(255,255,255,0.7);
+    color: var(--text-light, #AB47BC);
     letter-spacing: 3px;
     text-transform: uppercase;
     margin-bottom: 40px;
 }
 
 .countdown-date-label span {
-    color: #ff69b4;
+    background: linear-gradient(135deg, #FF4081, #FFD700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
     font-weight: 600;
 }
 
-/* Timer Boxes */
+/* Timer Boxes — Glass card style */
 .countdown-timer {
     display: flex;
     justify-content: center;
@@ -64,21 +83,22 @@
 }
 
 .countdown-box {
-    background: rgba(255,255,255,0.08);
+    background: var(--glass-bg, rgba(255,255,255,0.04));
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255,255,255,0.15);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.07));
     border-radius: 20px;
     padding: 25px 20px;
     min-width: 120px;
     position: relative;
     overflow: hidden;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
 .countdown-box:hover {
     transform: translateY(-8px) scale(1.05);
-    box-shadow: 0 20px 60px rgba(214,51,132,0.3);
-    border-color: rgba(255,105,180,0.4);
+    box-shadow: 0 0 40px rgba(255,20,147,0.15), 0 20px 60px rgba(233,30,99,0.1);
+    border-color: rgba(233,30,99,0.2);
 }
 
 .countdown-box::before {
@@ -88,8 +108,8 @@
     left: -50%;
     width: 200%;
     height: 200%;
-    background: conic-gradient(from 0deg, transparent, rgba(255,105,180,0.1), transparent, rgba(214,51,132,0.1), transparent);
-    animation: countdownBoxRotate 6s linear infinite;
+    background: conic-gradient(from 0deg, transparent, rgba(233,30,99,0.06), transparent, rgba(255,215,0,0.04), transparent);
+    animation: countdownBoxRotate 8s linear infinite;
 }
 
 @keyframes countdownBoxRotate {
@@ -105,7 +125,8 @@
     font-family: 'Poppins', sans-serif;
     font-size: 3.5rem;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-dark, #F3E5F5);
+    text-shadow: 0 0 20px rgba(255,20,147,0.15);
     line-height: 1;
     display: block;
     min-height: 60px;
@@ -125,30 +146,30 @@
 .countdown-label {
     font-family: 'Poppins', sans-serif;
     font-size: 0.85rem;
-    color: rgba(255,255,255,0.6);
+    color: var(--text-light, #AB47BC);
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-top: 8px;
     display: block;
 }
 
-/* Separator */
+/* Separator — neon pink pulse */
 .countdown-separator {
     display: flex;
     align-items: center;
     font-size: 2.5rem;
-    color: rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.15);
     font-weight: 300;
     padding-bottom: 25px;
     animation: countdownSepPulse 1s ease-in-out infinite;
 }
 
 @keyframes countdownSepPulse {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; color: #ff69b4; }
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 1; color: var(--neon-pink, #FF1493); text-shadow: 0 0 15px rgba(255,20,147,0.4); }
 }
 
-/* Birthday Message (when it IS the birthday) */
+/* Birthday Message */
 .countdown-birthday-msg {
     display: none;
     text-align: center;
@@ -168,14 +189,19 @@
 .countdown-birthday-msg h2 {
     font-family: 'Great Vibes', cursive;
     font-size: 4rem;
-    color: #ff69b4;
-    text-shadow: 0 0 40px rgba(255,105,180,0.6);
+    background: linear-gradient(135deg, #FF4081, #FFD700, #FF1493);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(255,64,129,0.3));
     margin-bottom: 10px;
+    animation: countdownTitleGlow 4s ease infinite;
 }
 
 .countdown-birthday-msg p {
     font-family: 'Poppins', sans-serif;
-    color: rgba(255,255,255,0.8);
+    color: var(--text-medium, #CE93D8);
     font-size: 1.2rem;
 }
 
@@ -196,12 +222,12 @@
 
 @keyframes countdownFloat {
     0% { opacity: 0; transform: translateY(100%) scale(0); }
-    20% { opacity: 0.8; transform: translateY(60%) scale(1); }
-    80% { opacity: 0.6; transform: translateY(-20%) scale(0.8); }
+    20% { opacity: 0.5; transform: translateY(60%) scale(1); }
+    80% { opacity: 0.35; transform: translateY(-20%) scale(0.8); }
     100% { opacity: 0; transform: translateY(-100%) scale(0); }
 }
 
-/* Progress ring */
+/* Progress ring — neon pink glow */
 .countdown-progress {
     display: flex;
     justify-content: center;
@@ -222,57 +248,80 @@
 
 .progress-ring-bg {
     fill: none;
-    stroke: rgba(255,255,255,0.1);
+    stroke: rgba(233,30,99,0.08);
     stroke-width: 4;
 }
 
 .progress-ring-fill {
     fill: none;
-    stroke: #ff69b4;
+    stroke: var(--neon-pink, #FF1493);
     stroke-width: 4;
     stroke-linecap: round;
     stroke-dasharray: 157.08;
     stroke-dashoffset: 157.08;
     transition: stroke-dashoffset 1s ease;
-    filter: drop-shadow(0 0 6px rgba(255,105,180,0.5));
+    filter: drop-shadow(0 0 6px rgba(255,64,129,0.4));
 }
 
 .progress-label {
     font-family: 'Poppins', sans-serif;
     font-size: 0.7rem;
-    color: rgba(255,255,255,0.5);
+    color: var(--text-light, #AB47BC);
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-top: 5px;
 }
 
-/* ===== Decorative corner sparkles ===== */
+/* ===== Decorative star sparkles — neon pink/gold/purple ===== */
 .birthday-countdown-section::after {
     content: '';
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(circle 2px at 10% 15%, rgba(255,255,255,0.4), transparent 3px),
-        radial-gradient(circle 2px at 90% 20%, rgba(255,255,255,0.3), transparent 3px),
-        radial-gradient(circle 1.5px at 15% 80%, rgba(255,255,255,0.35), transparent 3px),
-        radial-gradient(circle 2px at 85% 75%, rgba(255,255,255,0.3), transparent 3px),
-        radial-gradient(circle 1px at 50% 10%, rgba(255,255,255,0.5), transparent 2px),
-        radial-gradient(circle 1.5px at 30% 50%, rgba(255,255,255,0.25), transparent 3px),
-        radial-gradient(circle 1px at 70% 60%, rgba(255,255,255,0.3), transparent 2px);
+        radial-gradient(circle 1.5px at 10% 15%, rgba(255,64,129,0.35), transparent 3px),
+        radial-gradient(circle 1.5px at 90% 20%, rgba(255,215,0,0.3), transparent 3px),
+        radial-gradient(circle 1px at 15% 80%, rgba(156,39,176,0.3), transparent 3px),
+        radial-gradient(circle 1.5px at 85% 75%, rgba(255,64,129,0.25), transparent 3px),
+        radial-gradient(circle 1px at 50% 10%, rgba(255,215,0,0.4), transparent 2px),
+        radial-gradient(circle 1px at 30% 50%, rgba(156,39,176,0.2), transparent 3px),
+        radial-gradient(circle 1px at 70% 60%, rgba(255,64,129,0.2), transparent 2px);
     pointer-events: none;
-    animation: tapStarsTwinkle 5s ease-in-out infinite alternate;
+    animation: countdownStarsTwinkle 5s ease-in-out infinite alternate;
     z-index: 1;
 }
-@keyframes tapStarsTwinkle2 {
-    0% { opacity: 0.3; }
-    100% { opacity: 0.8; }
+@keyframes countdownStarsTwinkle {
+    0% { opacity: 0.4; }
+    100% { opacity: 0.9; }
 }
 
-/* Smooth countdown box transitions */
+/* GPU acceleration */
 .countdown-box {
     will-change: transform;
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
+}
+
+/* Top decorative divider */
+.birthday-countdown-section .countdown-wrapper::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 10%;
+    right: 10%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,64,129,0.2), rgba(255,215,0,0.15), rgba(255,64,129,0.2), transparent);
+    z-index: 10;
+}
+
+/* Section destroy animation */
+.birthday-countdown-section.destroying {
+    animation: countdownDestroy 0.8s ease forwards;
+    pointer-events: none;
+}
+@keyframes countdownDestroy {
+    0% { opacity: 1; max-height: 600px; padding: 80px 20px; }
+    60% { opacity: 0; }
+    100% { opacity: 0; max-height: 0; padding: 0 20px; margin: 0; overflow: hidden; }
 }
 
 /* Responsive */
